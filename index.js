@@ -1,7 +1,7 @@
 const express = require('express')
 const indeed = require('indeed-scraper')
+const path = require('path')
 const app = express()
-let listings = []
 
 const queryOptions = {
   query: 'JavaScript',
@@ -13,10 +13,12 @@ const queryOptions = {
   limit: '25'
 }
 
-indeed.query(queryOptions).then(res => {
-  listings = res
-})
+app.use(express.static('public'))
 
-app.get('/listings', (req, res) => res.json(listings))
+app.get('/listings', (req, res) => {
+  indeed.query(queryOptions).then(listings => {
+    res.json(listings)
+  })
+})
 
 app.listen(3000, console.log('Listening on 3000!'))
