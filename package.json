@@ -1,0 +1,23 @@
+{
+  "name": "hire-me",
+  "version": "1.0.0",
+  "description": "A web app for recent bootcamp grads who want to apply for a job.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alvinscheng/hire-me.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alvinscheng/hire-me/issues"
+  },
+  "homepage": "https://github.com/alvinscheng/hire-me#readme",
+  "dependencies": {
+    "indeed-scraper": "^2.0.2"
+  }
+}
