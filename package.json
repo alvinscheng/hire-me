@@ -1,0 +1,43 @@
+{
+  "name": "hire-me",
+  "version": "1.0.0",
+  "description": "A web app for recent bootcamp grads who want to apply for a job.",
+  "main": "index.js",
+  "scripts": {
+    "lint": "run-p lint:*",
+    "lint:html": "htmlhint ./**/*.html",
+    "lint:css": "stylelint ./**/*.css",
+    "lint:js": "eslint ./**/*.js",
+    "test": "npm run lint",
+    "precommit": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alvinscheng/hire-me.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alvinscheng/hire-me/issues"
+  },
+  "homepage": "https://github.com/alvinscheng/hire-me#readme",
+  "dependencies": {
+    "express": "^4.15.3",
+    "indeed-scraper": "^2.0.2"
+  },
+  "devDependencies": {
+    "eslint": "3.19.0",
+    "eslint-config-standard": "10.2.1",
+    "eslint-plugin-import": "2.3.0",
+    "eslint-plugin-node": "4.2.2",
+    "eslint-plugin-promise": "3.5.0",
+    "eslint-plugin-react": "7.0.1",
+    "eslint-plugin-standard": "3.0.1",
+    "htmlhint": "0.9.13",
+    "husky": "0.13.4",
+    "npm-run-all": "4.0.2",
+    "stylelint": "7.10.1",
+    "stylelint-config-standard": "16.0.0"
+  }
+}
