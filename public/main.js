@@ -1,14 +1,18 @@
 const $listings = document.querySelector('#listings')
+const $jobSearch = document.querySelector('#job-search')
 
-fetch('http://localhost:3000/listings', { method: 'GET' })
-  .then(response => {
-    return response.json()
-  })
-  .then(listings => {
-    listings
-      .map(listing => (renderListing(listing)))
-      .forEach($listing => $listings.appendChild($listing))
-  })
+$jobSearch.addEventListener('submit', () => {
+  event.preventDefault()
+  fetch('http://localhost:3000/listings', { method: 'GET' })
+    .then(response => {
+      return response.json()
+    })
+    .then(listings => {
+      listings
+        .map(listing => (renderListing(listing)))
+        .forEach($listing => $listings.appendChild($listing))
+    })
+})
 
 function renderListing(listing) {
   const $listing = document.createElement('li')

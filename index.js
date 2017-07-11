@@ -1,17 +1,9 @@
 const express = require('express')
 const indeed = require('indeed-scraper')
 const path = require('path')
-const app = express()
+const queryOptions = require('./query-options')
 
-const queryOptions = {
-  query: 'JavaScript',
-  city: 'Irvine, CA',
-  radius: '25',
-  level: 'entry_level',
-  jobType: 'fulltime',
-  sort: 'date',
-  limit: '25'
-}
+const app = express()
 
 app.use(express.static('public'))
 
