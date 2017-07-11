@@ -13,16 +13,16 @@ fetch('http://localhost:3000/listings', { method: 'GET' })
 function renderListing(listing) {
   const $listing = document.createElement('li')
   const $job = document.createElement('h3')
-  const $company = document.createElement('p')
-  const $location = document.createElement('p')
+  const $company = document.createElement('strong')
+  const $location = document.createElement('em')
   const $date = document.createElement('p')
   const $summary = document.createElement('p')
   const $link = document.createElement('a')
   const { title, company, location, summary, url, postDate } = listing
   $job.textContent = title
-  $company.textContent = company
+  $company.textContent = company + '- '
   $location.textContent = location
-  $date.textContent = postDate
+  $date.textContent = 'Posted: ' + postDate
   $summary.textContent = summary
   $link.textContent = 'Apply Here'
   $link.setAttribute('href', url)
