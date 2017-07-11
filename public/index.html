@@ -9,12 +9,8 @@
   <body>
     <div class="container">
       <form class="form-inline">
-        <div class="form-group">
-          <input type="text" class="form-control" placeholder="Job title, keyword, or company"/>
-        </div>
-        <div class="form-group">
-          <input type="text" class="form-control" placeholder="Enter a city"/>
-        </div>
+        <input type="text" class="form-control" size="40" placeholder="Job title, keyword, or company"/>
+        <input id="search-text-field" type="text" class="form-control" size="30" placeholder="Enter a city"/>
         <button type="submit" class="btn btn-default">Submit</button>
       </form>
     </div>
@@ -25,6 +21,14 @@
         </div>
       </div>
     </div>
+    <script>
+      function initialize() {
+        const options = { types: ['(cities)'] }
+        const input = document.querySelector('#search-text-field')
+        const autocomplete = new google.maps.places.Autocomplete(input, options)
+      }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAiRkErcRZG0MU_GY3Vyg1fNk0KVz-uqxk&libraries=places&callback=initialize"></script>
     <script src="main.js"></script>
   </body>
 </html>
