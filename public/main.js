@@ -17,14 +17,15 @@ function renderListing(listing) {
   const $location = document.createElement('p')
   const $date = document.createElement('p')
   const $summary = document.createElement('p')
-  const $link = document.createElement('p')
+  const $link = document.createElement('a')
   const { title, company, location, summary, url, postDate } = listing
   $job.textContent = title
   $company.textContent = company
   $location.textContent = location
   $date.textContent = postDate
   $summary.textContent = summary
-  $link.textContent = url
+  $link.textContent = 'Apply Here'
+  $link.setAttribute('href', url)
   $listing.appendChild($job)
   $listing.appendChild($company)
   $listing.appendChild($location)
