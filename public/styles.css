@@ -26,6 +26,10 @@
   z-index: -1;
 }
 
+#listings {
+  list-style-type: none;
+}
+
 .home {
   position: absolute;
   top: 25vh;

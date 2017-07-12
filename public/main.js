@@ -23,7 +23,6 @@ $jobSearch.addEventListener('submit', () => {
       $jobSearchContainer.classList.remove('home')
       $backgroundImage.classList.add('hidden')
       jobList = listings.map(listing => (renderListing(listing)))
-      renderPageNums()
       changePage(1)
     })
 })
@@ -47,26 +46,72 @@ function queryString(obj) {
 
 function changePage(page) {
   $listings.innerHTML = ''
+  scroll(0, 0)
   for (let i = page * 20 - 20; i < page * 20; i++) {
-    $listings.appendChild(jobList[i])
+    if (jobList[i]) {
+      $listings.appendChild(jobList[i])
+    }
+    else return
   }
+  window.location.hash = page
+  renderPageNums(page)
 }
 
-function renderPageNums() {
-  const pageNums = Math.floor(jobList.length / 20) + 1
+function renderPageNums(current) {
+  $pageNumbers.innerHTML = ''
+  let pageNums
+  if (jobList.length / 20 === Math.floor(jobList.length / 20)) {
+    pageNums = jobList.length / 20
+  }
+  else {
+    pageNums = Math.floor(jobList.length / 20) + 1
+  }
+
+  if (current > 1) {
+    const $prev = document.createElement('a')
+    $prev.textContent = 'Prev'
+    $prev.href = '#' + (current - 1)
+    $pageNumbers.appendChild($prev)
+  }
   for (let i = 1; i <= pageNums; i++) {
     const $pageNum = document.createElement('a')
     $pageNum.textContent = i
     $pageNum.href = '#' + i
+    $pageNum.classList.add('page')
     $pageNumbers.appendChild($pageNum)
   }
-  if (pageNums > 1) {
+  if (pageNums > current) {
     const $next = document.createElement('a')
     $next.textContent = 'Next'
-    $next.href = 2
+    $next.href = '#' + (current + 1)
     $pageNumbers.appendChild($next)
   }
 }
+
+class HashRouter {
+  constructor($views) {
+    this.$views = $views
+    this.isListening = false
+  }
+
+  match(hash) {
+    const pageNum = Number(hash.replace('#', ''))
+    changePage(pageNum)
+  }
+
+  listen() {
+    if (this.isListening) return
+    window.addEventListener('hashchange', () => {
+      this.match(window.location.hash)
+    })
+    this.isListening = true
+    window.dispatchEvent(new Event('hashchange'))
+  }
+}
+
+const $pages = document.querySelectorAll('.page')
+const router = new HashRouter($pages)
+router.listen()
 
 function renderListing(listing) {
   const $listing = document.createElement('li')
