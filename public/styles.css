@@ -5,9 +5,15 @@
 
 .home {
   position: absolute;
-  top: 50vh;
+  top: 25vh;
   margin: auto;
   width: 100%;
+}
+
+.logo-home {
+  display: block;
+  height: 64px;
+  margin: 20px auto;
 }
 
 #job-search {
