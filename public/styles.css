@@ -39,8 +39,12 @@
 
 .logo-home {
   display: block;
-  height: 64px;
+  text-align: center;
   margin: 20px auto;
+}
+
+#logo {
+  height: 64px;
 }
 
 #job-search {

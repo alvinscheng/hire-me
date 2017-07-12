@@ -51,7 +51,6 @@ function changePage(page) {
     if (jobList[i]) {
       $listings.appendChild(jobList[i])
     }
-    else return
   }
   window.location.hash = page
   renderPageNums(page)
@@ -77,10 +76,13 @@ function renderPageNums(current) {
     const $pageNum = document.createElement('a')
     $pageNum.textContent = i
     $pageNum.href = '#' + i
+    if (i === current) {
+      $pageNum.style.fontWeight = '900'
+    }
     $pageNum.classList.add('page')
     $pageNumbers.appendChild($pageNum)
   }
-  if (pageNums > current) {
+  if (current < pageNums) {
     const $next = document.createElement('a')
     $next.textContent = 'Next'
     $next.href = '#' + (current + 1)
