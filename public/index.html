@@ -29,6 +29,7 @@
         const options = { types: ['(cities)'] }
         const input = document.querySelector('#city-input')
         const autocomplete = new google.maps.places.Autocomplete(input, options)
+        autocomplete.setComponentRestrictions({ 'country': ['us'] })
       }
     </script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAiRkErcRZG0MU_GY3Vyg1fNk0KVz-uqxk&libraries=places&callback=initialize"></script>

@@ -58,3 +58,8 @@
 #page-numbers > a {
   padding: 5px;
 }
+
+.pac-icon {
+  width: 0;
+  background-image: none;
+}
