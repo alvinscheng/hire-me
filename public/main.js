@@ -1,6 +1,7 @@
 const $listings = document.querySelector('#listings')
 const $jobSearch = document.querySelector('#job-search')
 const $jobSearchContainer = document.querySelector('#job-search-container')
+const $backgroundImage = document.querySelector('#background-image')
 
 $jobSearch.addEventListener('submit', () => {
   event.preventDefault()
@@ -19,6 +20,7 @@ $jobSearch.addEventListener('submit', () => {
     .then(listings => {
       $listings.innerHTML = ''
       $jobSearchContainer.classList.remove('home')
+      $backgroundImage.classList.add('hidden')
       listings
         .map(listing => (renderListing(listing)))
         .forEach($listing => $listings.appendChild($listing))
