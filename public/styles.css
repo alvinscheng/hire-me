@@ -46,3 +46,11 @@
 .hidden {
   display: none;
 }
+
+#page-numbers {
+  text-align: center;
+}
+
+#page-numbers > a {
+  padding: 5px;
+}

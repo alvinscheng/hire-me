@@ -5,6 +5,6 @@ const queryOptions = {
   level: 'entry_level',
   jobType: 'fulltime',
   sort: 'date',
-  limit: '25'
+  limit: '100'
 }
 module.exports = queryOptions

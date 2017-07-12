@@ -2,6 +2,8 @@ const $listings = document.querySelector('#listings')
 const $jobSearch = document.querySelector('#job-search')
 const $jobSearchContainer = document.querySelector('#job-search-container')
 const $backgroundImage = document.querySelector('#background-image')
+const $pageNumbers = document.querySelector('#page-numbers')
+let jobList = []
 
 $jobSearch.addEventListener('submit', () => {
   event.preventDefault()
@@ -18,12 +20,11 @@ $jobSearch.addEventListener('submit', () => {
       return response.json()
     })
     .then(listings => {
-      $listings.innerHTML = ''
       $jobSearchContainer.classList.remove('home')
       $backgroundImage.classList.add('hidden')
-      listings
-        .map(listing => (renderListing(listing)))
-        .forEach($listing => $listings.appendChild($listing))
+      jobList = listings.map(listing => (renderListing(listing)))
+      renderPageNums()
+      changePage(1)
     })
 })
 
@@ -42,6 +43,29 @@ function queryString(obj) {
     }
   }
   return string
+}
+
+function changePage(page) {
+  $listings.innerHTML = ''
+  for (let i = page * 20 - 20; i < page * 20; i++) {
+    $listings.appendChild(jobList[i])
+  }
+}
+
+function renderPageNums() {
+  const pageNums = Math.floor(jobList.length / 20) + 1
+  for (let i = 1; i <= pageNums; i++) {
+    const $pageNum = document.createElement('a')
+    $pageNum.textContent = i
+    $pageNum.href = '#' + i
+    $pageNumbers.appendChild($pageNum)
+  }
+  if (pageNums > 1) {
+    const $next = document.createElement('a')
+    $next.textContent = 'Next'
+    $next.href = 2
+    $pageNumbers.appendChild($next)
+  }
 }
 
 function renderListing(listing) {
