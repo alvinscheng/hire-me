@@ -7,6 +7,11 @@ const app = express()
 
 app.use(express.static('public'))
 
+app.post('/', (req, res) => {
+  const newQueryOptions = req.query
+  Object.assign(queryOptions, newQueryOptions)
+})
+
 app.get('/listings', (req, res) => {
   indeed.query(queryOptions).then(listings => {
     res.json(listings)

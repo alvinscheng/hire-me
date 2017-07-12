@@ -24,7 +24,8 @@
   "homepage": "https://github.com/alvinscheng/hire-me#readme",
   "dependencies": {
     "express": "^4.15.3",
-    "indeed-scraper": "^2.0.2"
+    "indeed-scraper": "^2.0.2",
+    "query-string": "^4.3.4"
   },
   "devDependencies": {
     "eslint": "3.19.0",

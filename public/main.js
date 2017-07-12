@@ -3,6 +3,12 @@ const $jobSearch = document.querySelector('#job-search')
 
 $jobSearch.addEventListener('submit', () => {
   event.preventDefault()
+  const $jobInput = document.querySelector('#job-input')
+  const $cityInput = document.querySelector('#city-input')
+  const queryString = '?query=' + $jobInput.value + '&city=' + $cityInput.value
+
+  fetch('http://localhost:3000/' + queryString, { method: 'POST' })
+
   fetch('http://localhost:3000/listings', { method: 'GET' })
     .then(response => {
       return response.json()
