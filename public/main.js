@@ -5,20 +5,40 @@ $jobSearch.addEventListener('submit', () => {
   event.preventDefault()
   const $jobInput = document.querySelector('#job-input')
   const $cityInput = document.querySelector('#city-input')
-  const queryString = '?query=' + $jobInput.value + '&city=' + $cityInput.value
-
-  fetch('http://localhost:3000/' + queryString, { method: 'POST' })
+  const options = {
+    query: $jobInput.value,
+    city: $cityInput.value
+  }
+  search(options)
 
   fetch('http://localhost:3000/listings', { method: 'GET' })
     .then(response => {
       return response.json()
     })
     .then(listings => {
+      $listings.innerHTML = ''
       listings
         .map(listing => (renderListing(listing)))
         .forEach($listing => $listings.appendChild($listing))
     })
 })
+
+function search(queries) {
+  fetch('http://localhost:3000/' + queryString(queries), { method: 'POST' })
+}
+
+function queryString(obj) {
+  let string = '?'
+  for (const key in obj) {
+    if (string === '?') {
+      string += key + '=' + obj[key]
+    }
+    else {
+      string += '&' + key + '=' + obj[key]
+    }
+  }
+  return string
+}
 
 function renderListing(listing) {
   const $listing = document.createElement('li')

@@ -10,6 +10,7 @@ app.use(express.static('public'))
 app.post('/', (req, res) => {
   const newQueryOptions = req.query
   Object.assign(queryOptions, newQueryOptions)
+  res.sendStatus(201)
 })
 
 app.get('/listings', (req, res) => {
