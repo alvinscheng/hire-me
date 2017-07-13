@@ -38,7 +38,53 @@
           </ul>
         </nav>
         <div class="col-md-8">
-          <ul id="listings"></ul>
+          <ul id="listings" class="hidden"></ul>
+
+          <div id="profile-page">
+            <label class="pull-right hidden">
+              User:
+              <select id="users">
+                <option value="">---</option>
+              </select>
+            </label>
+            <div class="col-sm-3">
+              <div>
+                <img src="http://via.placeholder.com/200x200"/>
+              </div>
+              <button id="upload-photo" type="button" class="btn btn-default btn-xs">Upload Photo</button>
+            </div>
+            <form class="form-horizontal col-sm-9">
+              <div class="form-group">
+                <label for="first-name" class="col-sm-4 control-label">First Name</label>
+                <div class="col-sm-8">
+                  <input type="text" class="form-control" id="first-name"/>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="last-name" class="col-sm-4 control-label">Last Name</label>
+                <div class="col-sm-8">
+                  <input type="text" class="form-control" id="last-name"/>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="email" class="col-sm-4 control-label">Email</label>
+                <div class="col-sm-8">
+                  <input type="email" class="form-control" id="email"/>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="phone" class="col-sm-4 control-label">Phone</label>
+                <div class="col-sm-8">
+                  <input type="text" class="form-control" id="phone"/>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-offset-4 col-sm-8">
+                  <button type="submit" class="btn btn-default">Submit</button>
+                </div>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     </div>

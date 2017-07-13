@@ -22,6 +22,14 @@
   list-style-type: none;
 }
 
+#profile-page {
+  padding: 40px;
+}
+
+#upload-photo {
+  width: 200px;
+}
+
 .home {
   position: absolute;
   top: 25vh;
