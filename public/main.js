@@ -3,6 +3,7 @@ const $jobSearch = document.querySelector('#job-search')
 const $jobSearchContainer = document.querySelector('#job-search-container')
 const $backgroundImage = document.querySelector('#background-image')
 const $pageNumbers = document.querySelector('#page-numbers')
+const $sideBar = document.querySelector('#sidebar')
 let jobList = []
 
 $jobSearch.addEventListener('submit', () => {
@@ -21,6 +22,7 @@ $jobSearch.addEventListener('submit', () => {
     })
     .then(listings => {
       $jobSearchContainer.classList.remove('home')
+      $sideBar.classList.remove('hidden')
       $backgroundImage.classList.add('hidden')
       jobList = listings.map(listing => (renderListing(listing)))
       changePage(1)
