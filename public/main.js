@@ -1,5 +1,6 @@
 const $listings = document.querySelector('#listings')
 const $jobSearch = document.querySelector('#job-search')
+const $createUser = document.querySelector('#create-user')
 const $jobSearchContainer = document.querySelector('#job-search-container')
 const $backgroundImage = document.querySelector('#background-image')
 const $pageNumbers = document.querySelector('#page-numbers')
@@ -14,7 +15,7 @@ $jobSearch.addEventListener('submit', () => {
     query: $jobInput.value,
     city: $cityInput.value
   }
-  search(options)
+  search('/', options)
 
   fetch('http://localhost:3000/listings', { method: 'GET' })
     .then(response => {
@@ -29,8 +30,23 @@ $jobSearch.addEventListener('submit', () => {
     })
 })
 
-function search(queries) {
-  fetch('http://localhost:3000/' + queryString(queries), { method: 'POST' })
+$createUser.addEventListener('submit', () => {
+  event.preventDefault()
+  const $firstName = document.querySelector('#first-name')
+  const $lastName = document.querySelector('#last-name')
+  const $email = document.querySelector('#email')
+  const $phone = document.querySelector('#phone')
+  const userInfo = {
+    firstName: $firstName.value,
+    lastName: $lastName.value,
+    email: $email.value,
+    phone: $phone.value
+  }
+  search('/users', userInfo)
+})
+
+function search(path, queries) {
+  fetch('http://localhost:3000' + path + queryString(queries), { method: 'POST' })
 }
 
 function queryString(obj) {
