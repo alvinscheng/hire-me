@@ -17,7 +17,7 @@ $jobSearch.addEventListener('submit', () => {
   }
   search('/', options)
 
-  fetch('http://localhost:3000/listings', { method: 'GET' })
+  get('/listings')
     .then(response => {
       return response.json()
     })
@@ -42,11 +42,23 @@ $createUser.addEventListener('submit', () => {
     email: $email.value,
     phone: $phone.value
   }
-  search('/users', userInfo)
+  post('/users', { 'Content-Type': 'application/json' }, userInfo)
 })
 
 function search(path, queries) {
-  fetch('http://localhost:3000' + path + queryString(queries), { method: 'POST' })
+  return fetch(path + queryString(queries), { method: 'POST' })
+}
+
+function get(path) {
+  return fetch(path, { method: 'GET' })
+}
+
+function post(path, header, body) {
+  return fetch(path, {
+    method: 'POST',
+    headers: header,
+    body: JSON.stringify(body)
+  })
 }
 
 function queryString(obj) {

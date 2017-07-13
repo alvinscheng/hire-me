@@ -1,6 +1,7 @@
 const express = require('express')
 const indeed = require('indeed-scraper')
 const path = require('path')
+const bodyParser = require('body-parser')
 const queryOptions = require('./query-options')
 const knex = require('knex')({
   dialect: 'pg',
@@ -10,6 +11,7 @@ const knex = require('knex')({
 const app = express()
 
 app.use(express.static('public'))
+app.use(bodyParser.json())
 
 app.post('/', (req, res) => {
   const newQueryOptions = req.query
@@ -18,7 +20,8 @@ app.post('/', (req, res) => {
 })
 
 app.post('/users', (req, res) => {
-  const user = req.query
+  const user = req.body
+  console.log(user)
   const dbUser = {
     first_name: user.firstName,
     last_name: user.lastName,
