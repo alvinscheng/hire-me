@@ -44,12 +44,27 @@
           </div>
 
           <div id="profile-page" class="page hidden">
-            <label class="pull-right hidden">
-              User:
-              <select id="users">
-                <option value="">---</option>
-              </select>
-            </label>
+            <div class="row">
+              <button type="button" name="new-profile">New Profile</button>
+              <label class="pull-right">
+                User:
+                <select id="users">
+                  <option value="">id: 1</option>
+                </select>
+              </label>
+            </div>
+            <div class="row">
+              <div>
+                <img/>
+              </div>
+              <h4>Name:</h4>
+              <p>Email:</p>
+              <p>Phone:</p>
+              <button type="button" name="edit-profile">Edit Profile</button>
+            </div>
+          </div>
+
+          <div id="create-profile-page" class="page hidden">
             <form id="create-user">
               <div class="col-sm-3">
                 <div>
