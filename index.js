@@ -9,7 +9,7 @@ const knex = require('knex')({
   connection: 'postgres://localhost:5432/hire-me'
 })
 
-var upload = multer({ dest: 'uploads/' })
+const upload = multer({ dest: 'uploads/' })
 const app = express()
 
 app.use(express.static('public'))
@@ -30,7 +30,6 @@ app.post('/users', upload.single('picture'), (req, res) => {
     phone: user.phone,
     picture: req.file.filename
   }
-  console.log(dbUser)
 
   knex
     .insert(dbUser)

@@ -27,20 +27,23 @@
         <nav id="sidebar" class="col-md-2 hidden">
           <ul class="nav">
             <li class="active">
-              <a href="#">Search</a>
+              <a href="#search" id="nav-search">Search</a>
             </li>
             <li>
-              <a href="#">Profile</a>
+              <a href="#profile" id="nav-profile">Profile</a>
             </li>
             <li>
-              <a href="#">Resumes</a>
+              <a href="#profile/resumes" id="nav-resumes">Resumes</a>
             </li>
           </ul>
         </nav>
         <div class="col-md-8">
-          <ul id="listings" class="hidden"></ul>
+          <div id="search-page" class="page">
+            <ul id="listings"></ul>
+            <div id="page-numbers"></div>
+          </div>
 
-          <div id="profile-page" class="">
+          <div id="profile-page" class="page hidden">
             <label class="pull-right hidden">
               User:
               <select id="users">
@@ -90,7 +93,7 @@
         </div>
       </div>
     </div>
-    <div id="page-numbers"></div>
+
     <script>
       function initialize() {
         const options = { types: ['(cities)'] }

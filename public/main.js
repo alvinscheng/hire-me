@@ -6,7 +6,10 @@ const $backgroundImage = document.querySelector('#background-image')
 const $pageNumbers = document.querySelector('#page-numbers')
 const $sideBar = document.querySelector('#sidebar')
 const $picUpload = document.querySelector('#pic-upload')
+const $profilePage = document.querySelector('#profile-page')
+const $searchPage = document.querySelector('#search-page')
 let jobList = []
+let pageNums = 1
 
 $jobSearch.addEventListener('submit', () => {
   event.preventDefault()
@@ -94,7 +97,6 @@ function changePage(page) {
 
 function renderPageNums(current) {
   $pageNumbers.innerHTML = ''
-  let pageNums
   if (jobList.length / 20 === Math.floor(jobList.length / 20)) {
     pageNums = jobList.length / 20
   }
@@ -124,17 +126,26 @@ function renderPageNums(current) {
     $next.href = '#' + (current + 1)
     $pageNumbers.appendChild($next)
   }
+
+  addPageRoutes()
 }
 
 class HashRouter {
   constructor($views) {
-    this.$views = $views
+    this.$views = Array.from($views)
+    this.handlers = {}
     this.isListening = false
   }
 
+  when(hash, handler) {
+    this.handlers[hash] = handler
+  }
+
   match(hash) {
-    const pageNum = Number(hash.replace('#', ''))
-    changePage(pageNum)
+    const viewId = hash.replace('#', '')
+    const handler = this.handlers[viewId]
+    if (!handler) return
+    handler()
   }
 
   listen() {
@@ -150,6 +161,24 @@ class HashRouter {
 const $pages = document.querySelectorAll('.page')
 const router = new HashRouter($pages)
 router.listen()
+
+router.when('search', () => {
+  $profilePage.classList.add('hidden')
+  $searchPage.classList.remove('hidden')
+})
+
+router.when('profile', () => {
+  $searchPage.classList.add('hidden')
+  $profilePage.classList.remove('hidden')
+})
+
+function addPageRoutes() {
+  for (let i = 1; i <= pageNums; i++) {
+    router.when(i, () => {
+      changePage(i)
+    })
+  }
+}
 
 function renderListing(listing) {
   const $listing = document.createElement('li')
