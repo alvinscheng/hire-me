@@ -8,6 +8,7 @@ const $sideBar = document.querySelector('#sidebar')
 const $picUpload = document.querySelector('#pic-upload')
 const $profilePage = document.querySelector('#profile-page')
 const $searchPage = document.querySelector('#search-page')
+const $navItems = document.querySelectorAll('.nav-item')
 let jobList = []
 let pageNums = 1
 
@@ -43,6 +44,18 @@ $createUser.addEventListener('submit', () => {
 })
 
 $picUpload.addEventListener('change', previewPhoto)
+
+$navItems.forEach($navItem => {
+  $navItem.addEventListener('click', () => {
+    $navItem.classList.add('active')
+
+    $navItems.forEach($item => {
+      if ($item !== $navItem) {
+        $item.classList.remove('active')
+      }
+    })
+  })
+})
 
 function search(path, queries) {
   return fetch(path + queryString(queries), { method: 'POST' })

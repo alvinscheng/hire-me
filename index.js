@@ -1,6 +1,5 @@
 const express = require('express')
 const indeed = require('indeed-scraper')
-const path = require('path')
 const bodyParser = require('body-parser')
 const multer = require('multer')
 const queryOptions = require('./query-options')
