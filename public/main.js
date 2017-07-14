@@ -28,6 +28,8 @@ $jobSearch.addEventListener('submit', () => {
     .then(listings => {
       $jobSearchContainer.classList.remove('home')
       $sideBar.classList.remove('hidden')
+      $searchPage.classList.remove('hidden')
+      $profilePage.classList.add('hidden')
       $backgroundImage.classList.add('hidden')
       jobList = listings.map(listing => (renderListing(listing)))
       changePage(1)

@@ -18,6 +18,11 @@
   opacity: 0.5;
 }
 
+#sidebar {
+  position: fixed;
+  margin-top: 25px;
+}
+
 #listings {
   list-style-type: none;
 }
