@@ -30,6 +30,10 @@
   width: 200px;
 }
 
+#profile-upload {
+  margin: 5px;
+}
+
 .home {
   position: absolute;
   top: 25vh;

@@ -21,7 +21,6 @@ app.post('/', (req, res) => {
 
 app.post('/users', (req, res) => {
   const user = req.body
-  console.log(user)
   const dbUser = {
     first_name: user.firstName,
     last_name: user.lastName,
