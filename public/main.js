@@ -57,6 +57,49 @@ $navItems.forEach($navItem => {
   })
 })
 
+class HashRouter {
+  constructor($views) {
+    this.$views = Array.from($views)
+    this.handlers = {}
+    this.isListening = false
+  }
+
+  when(hash, handler) {
+    this.handlers[hash] = handler
+  }
+
+  match(hash) {
+    const viewId = hash.replace('#', '')
+    const handler = this.handlers[viewId]
+    if (!handler) return
+    handler()
+  }
+
+  listen() {
+    if (this.isListening) return
+    window.addEventListener('hashchange', () => {
+      this.match(window.location.hash)
+    })
+    this.isListening = true
+    window.dispatchEvent(new Event('hashchange'))
+  }
+}
+
+const $pages = document.querySelectorAll('.page')
+const router = new HashRouter($pages)
+
+router.when('search', () => {
+  $profilePage.classList.add('hidden')
+  $searchPage.classList.remove('hidden')
+})
+
+router.when('profile', () => {
+  $searchPage.classList.add('hidden')
+  $profilePage.classList.remove('hidden')
+})
+
+router.listen()
+
 function search(path, queries) {
   return fetch(path + queryString(queries), { method: 'POST' })
 }
@@ -144,48 +187,6 @@ function renderPageNums(current) {
 
   addPageRoutes()
 }
-
-class HashRouter {
-  constructor($views) {
-    this.$views = Array.from($views)
-    this.handlers = {}
-    this.isListening = false
-  }
-
-  when(hash, handler) {
-    this.handlers[hash] = handler
-  }
-
-  match(hash) {
-    const viewId = hash.replace('#', '')
-    const handler = this.handlers[viewId]
-    if (!handler) return
-    handler()
-  }
-
-  listen() {
-    if (this.isListening) return
-    window.addEventListener('hashchange', () => {
-      this.match(window.location.hash)
-    })
-    this.isListening = true
-    window.dispatchEvent(new Event('hashchange'))
-  }
-}
-
-const $pages = document.querySelectorAll('.page')
-const router = new HashRouter($pages)
-router.listen()
-
-router.when('search', () => {
-  $profilePage.classList.add('hidden')
-  $searchPage.classList.remove('hidden')
-})
-
-router.when('profile', () => {
-  $searchPage.classList.add('hidden')
-  $profilePage.classList.remove('hidden')
-})
 
 function addPageRoutes() {
   for (let i = 1; i <= pageNums; i++) {
