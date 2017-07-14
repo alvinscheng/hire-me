@@ -5,6 +5,7 @@ const $jobSearchContainer = document.querySelector('#job-search-container')
 const $backgroundImage = document.querySelector('#background-image')
 const $pageNumbers = document.querySelector('#page-numbers')
 const $sideBar = document.querySelector('#sidebar')
+const $picUpload = document.querySelector('#pic-upload')
 let jobList = []
 
 $jobSearch.addEventListener('submit', () => {
@@ -36,6 +37,8 @@ $createUser.addEventListener('submit', () => {
   post('/users', formData)
 })
 
+$picUpload.addEventListener('change', previewPhoto)
+
 function search(path, queries) {
   return fetch(path + queryString(queries), { method: 'POST' })
 }
@@ -50,6 +53,18 @@ function post(path, data, header) {
     headers: header,
     body: data
   })
+}
+
+function previewPhoto() {
+  const $preview = document.querySelector('#profile-pic')
+  const reader = new FileReader()
+  reader.addEventListener('load', () => {
+    $preview.src = reader.result
+  })
+
+  if ($picUpload) {
+    reader.readAsDataURL($picUpload.files[0])
+  }
 }
 
 function queryString(obj) {
