@@ -32,17 +32,8 @@ $jobSearch.addEventListener('submit', () => {
 
 $createUser.addEventListener('submit', () => {
   event.preventDefault()
-  const $firstName = document.querySelector('#first-name')
-  const $lastName = document.querySelector('#last-name')
-  const $email = document.querySelector('#email')
-  const $phone = document.querySelector('#phone')
-  const userInfo = {
-    firstName: $firstName.value,
-    lastName: $lastName.value,
-    email: $email.value,
-    phone: $phone.value
-  }
-  post('/users', { 'Content-Type': 'application/json' }, userInfo)
+  const formData = new FormData($createUser)
+  post('/users', formData)
 })
 
 function search(path, queries) {
@@ -53,11 +44,11 @@ function get(path) {
   return fetch(path, { method: 'GET' })
 }
 
-function post(path, header, body) {
+function post(path, data, header) {
   return fetch(path, {
     method: 'POST',
     headers: header,
-    body: JSON.stringify(body)
+    body: data
   })
 }
 
