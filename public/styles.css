@@ -4,30 +4,46 @@
 }
 
 #background-image {
-  width: 100vw;
-  height: 100vh;
-  display: block;
-  position: relative;
-}
-
-#background-image::after {
-  content: "";
   height: 100vh;
   background-image: url("images/bg.jpg");
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
+}
+
+#background-image > #opaque-layer {
+  height: 100vh;
+  width: 100vw;
+  background-color: black;
   opacity: 0.5;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  position: absolute;
-  z-index: -1;
+}
+
+#sidebar {
+  position: fixed;
+  margin-top: 20px;
 }
 
 #listings {
   list-style-type: none;
+}
+
+#profile-page {
+  padding: 40px;
+}
+
+#profile-pic {
+  height: 200px;
+  width: 200px;
+  border: 1px solid black;
+  background-color: lightGrey;
+}
+
+#upload-photo {
+  width: 200px;
+}
+
+#profile-upload {
+  margin: 5px;
 }
 
 .home {

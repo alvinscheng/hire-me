@@ -1,9 +1,16 @@
 const $listings = document.querySelector('#listings')
 const $jobSearch = document.querySelector('#job-search')
+const $createUser = document.querySelector('#create-user')
 const $jobSearchContainer = document.querySelector('#job-search-container')
 const $backgroundImage = document.querySelector('#background-image')
 const $pageNumbers = document.querySelector('#page-numbers')
+const $sideBar = document.querySelector('#sidebar')
+const $picUpload = document.querySelector('#pic-upload')
+const $profilePage = document.querySelector('#profile-page')
+const $searchPage = document.querySelector('#search-page')
+const $navItems = document.querySelectorAll('.nav-item')
 let jobList = []
+let pageNums = 1
 
 $jobSearch.addEventListener('submit', () => {
   event.preventDefault()
@@ -13,22 +20,69 @@ $jobSearch.addEventListener('submit', () => {
     query: $jobInput.value,
     city: $cityInput.value
   }
-  search(options)
+  search('/', options)
 
-  fetch('http://localhost:3000/listings', { method: 'GET' })
+  get('/listings')
     .then(response => {
       return response.json()
     })
     .then(listings => {
       $jobSearchContainer.classList.remove('home')
+      $sideBar.classList.remove('hidden')
+      $searchPage.classList.remove('hidden')
+      $profilePage.classList.add('hidden')
       $backgroundImage.classList.add('hidden')
       jobList = listings.map(listing => (renderListing(listing)))
       changePage(1)
     })
 })
 
-function search(queries) {
-  fetch('http://localhost:3000/' + queryString(queries), { method: 'POST' })
+$createUser.addEventListener('submit', () => {
+  event.preventDefault()
+  const formData = new FormData($createUser)
+  post('/users', formData)
+})
+
+$picUpload.addEventListener('change', previewPhoto)
+
+$navItems.forEach($navItem => {
+  $navItem.addEventListener('click', () => {
+    $navItem.classList.add('active')
+
+    $navItems.forEach($item => {
+      if ($item !== $navItem) {
+        $item.classList.remove('active')
+      }
+    })
+  })
+})
+
+function search(path, queries) {
+  return fetch(path + queryString(queries), { method: 'POST' })
+}
+
+function get(path) {
+  return fetch(path, { method: 'GET' })
+}
+
+function post(path, data, header) {
+  return fetch(path, {
+    method: 'POST',
+    headers: header,
+    body: data
+  })
+}
+
+function previewPhoto() {
+  const $preview = document.querySelector('#profile-pic')
+  const reader = new FileReader()
+  reader.addEventListener('load', () => {
+    $preview.src = reader.result
+  })
+
+  if ($picUpload) {
+    reader.readAsDataURL($picUpload.files[0])
+  }
 }
 
 function queryString(obj) {
@@ -58,7 +112,6 @@ function changePage(page) {
 
 function renderPageNums(current) {
   $pageNumbers.innerHTML = ''
-  let pageNums
   if (jobList.length / 20 === Math.floor(jobList.length / 20)) {
     pageNums = jobList.length / 20
   }
@@ -88,17 +141,26 @@ function renderPageNums(current) {
     $next.href = '#' + (current + 1)
     $pageNumbers.appendChild($next)
   }
+
+  addPageRoutes()
 }
 
 class HashRouter {
   constructor($views) {
-    this.$views = $views
+    this.$views = Array.from($views)
+    this.handlers = {}
     this.isListening = false
   }
 
+  when(hash, handler) {
+    this.handlers[hash] = handler
+  }
+
   match(hash) {
-    const pageNum = Number(hash.replace('#', ''))
-    changePage(pageNum)
+    const viewId = hash.replace('#', '')
+    const handler = this.handlers[viewId]
+    if (!handler) return
+    handler()
   }
 
   listen() {
@@ -114,6 +176,24 @@ class HashRouter {
 const $pages = document.querySelectorAll('.page')
 const router = new HashRouter($pages)
 router.listen()
+
+router.when('search', () => {
+  $profilePage.classList.add('hidden')
+  $searchPage.classList.remove('hidden')
+})
+
+router.when('profile', () => {
+  $searchPage.classList.add('hidden')
+  $profilePage.classList.remove('hidden')
+})
+
+function addPageRoutes() {
+  for (let i = 1; i <= pageNums; i++) {
+    router.when(i, () => {
+      changePage(i)
+    })
+  }
+}
 
 function renderListing(listing) {
   const $listing = document.createElement('li')
