@@ -40,4 +40,10 @@ app.get('/listings', (req, res) => {
   })
 })
 
+app.get('/profile', (req, res) => {
+  knex('users')
+    .where('id', 1)
+    .then(user => res.json(user))
+})
+
 app.listen(3000, console.log('Listening on 3000!'))

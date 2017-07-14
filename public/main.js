@@ -48,6 +48,9 @@ $picUpload.addEventListener('change', previewPhoto)
 $navItems.forEach($navItem => {
   $navItem.addEventListener('click', () => {
     $navItem.classList.add('active')
+    get('/profile')
+      .then(response => response.json())
+      .then(user => console.log(user))
 
     $navItems.forEach($item => {
       if ($item !== $navItem) {
