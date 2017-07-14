@@ -27,7 +27,8 @@
     "indeed-scraper": "^2.0.2",
     "knex": "^0.13.0",
     "multer": "^1.3.0",
-    "pg": "^6.4.0"
+    "pg": "^6.4.0",
+    "snakecase-keys": "^1.1.0"
   },
   "devDependencies": {
     "eslint": "3.19.0",

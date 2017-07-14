@@ -3,6 +3,7 @@ const indeed = require('indeed-scraper')
 const bodyParser = require('body-parser')
 const multer = require('multer')
 const queryOptions = require('./query-options')
+const snakecaseKeys = require('snakecase-keys')
 const knex = require('knex')({
   dialect: 'pg',
   connection: 'postgres://localhost:5432/hire-me'
@@ -21,17 +22,14 @@ app.post('/', (req, res) => {
 })
 
 app.post('/users', upload.single('picture'), (req, res) => {
-  const user = req.body
-  const dbUser = {
-    first_name: user.firstName,
-    last_name: user.lastName,
-    email: user.email,
-    phone: user.phone,
-    picture: req.file.filename
+  const user = snakecaseKeys(req.body)
+  if (req.file) {
+    user.picture = req.file.filename
   }
+  console.log(user)
 
   knex
-    .insert(dbUser)
+    .insert(snakecaseKeys(user))
     .into('users')
     .then(() => res.sendStatus(201))
 })
