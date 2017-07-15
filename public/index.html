@@ -10,6 +10,19 @@
     <div id="background-image">
       <div id="opaque-layer"></div>
     </div>
+    <nav id="sidebar" class="col-md-2 hidden">
+      <ul class="nav nav-pills nav-stacked">
+        <li class="nav-item active">
+          <a href="#search" id="nav-search">Search</a>
+        </li>
+        <li class="nav-item">
+          <a href="#profile" id="nav-profile">Profile</a>
+        </li>
+        <li class="nav-item">
+          <a href="#profile/resumes" id="nav-resumes">Resumes</a>
+        </li>
+      </ul>
+    </nav>
     <header id="job-search-container" class="home">
       <div class="logo-home">
         <a href="/">
@@ -24,19 +37,6 @@
     </header>
     <div class="container-fluid">
       <div class="row">
-        <nav id="sidebar" class="col-md-2 hidden">
-          <ul class="nav nav-pills nav-stacked">
-            <li class="nav-item active">
-              <a href="#search" id="nav-search">Search</a>
-            </li>
-            <li class="nav-item">
-              <a href="#profile" id="nav-profile">Profile</a>
-            </li>
-            <li class="nav-item">
-              <a href="#profile/resumes" id="nav-resumes">Resumes</a>
-            </li>
-          </ul>
-        </nav>
         <div class="col-md-8 col-md-offset-2">
           <div id="search-page" class="page">
             <ul id="listings"></ul>
@@ -53,13 +53,13 @@
                 </select>
               </label>
             </div>
-            <div class="row">
+            <div id="user-profile" class="row">
               <div>
-                <img/>
+                <img id="profile-pic" class="profile-pic"/>
               </div>
-              <h4>Name:</h4>
-              <p>Email:</p>
-              <p>Phone:</p>
+              <h4 id="profile-name"></h4>
+              <p id="profile-email"></p>
+              <p id="profile-phone"></p>
               <button type="button" name="edit-profile">Edit Profile</button>
             </div>
           </div>
@@ -68,7 +68,7 @@
             <form id="create-user">
               <div class="col-sm-3">
                 <div>
-                  <img id="profile-pic"/>
+                  <img id="profile-pic-preview" class="profile-pic"/>
                 </div>
                 <input id="pic-upload" name="picture" type="file"/>
               </div>

@@ -26,7 +26,6 @@ app.post('/users', upload.single('picture'), (req, res) => {
   if (req.file) {
     user.picture = req.file.filename
   }
-  console.log(user)
 
   knex
     .insert(snakecaseKeys(user))

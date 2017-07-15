@@ -50,7 +50,7 @@ $navItems.forEach($navItem => {
     $navItem.classList.add('active')
     get('/profile')
       .then(response => response.json())
-      .then(user => console.log(user))
+      .then(user => renderUserInfo(user[0]))
 
     $navItems.forEach($item => {
       if ($item !== $navItem) {
@@ -120,7 +120,7 @@ function post(path, data, header) {
 }
 
 function previewPhoto() {
-  const $preview = document.querySelector('#profile-pic')
+  const $preview = document.querySelector('#profile-pic-preview')
   const reader = new FileReader()
   reader.addEventListener('load', () => {
     $preview.src = reader.result
@@ -222,4 +222,13 @@ function renderListing(listing) {
   $listing.appendChild($summary)
   $listing.appendChild($link)
   return $listing
+}
+
+function renderUserInfo(user) {
+  const $profileName = document.querySelector('#profile-name')
+  const $profileEmail = document.querySelector('#profile-email')
+  const $profilePhone = document.querySelector('#profile-phone')
+  $profileName.textContent = user.first_name + ' ' + user.last_name
+  $profileEmail.textContent = user.email
+  $profilePhone.textContent = user.phone
 }
