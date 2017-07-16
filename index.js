@@ -9,7 +9,7 @@ const knex = require('knex')({
   connection: 'postgres://localhost:5432/hire-me'
 })
 
-const upload = multer({ dest: 'uploads/' })
+const upload = multer({ dest: 'public/uploads/' })
 const app = express()
 
 app.use(express.static('public'))
@@ -28,7 +28,7 @@ app.post('/users', upload.single('picture'), (req, res) => {
   }
 
   knex
-    .insert(snakecaseKeys(user))
+    .insert(user)
     .into('users')
     .then(() => res.sendStatus(201))
 })
@@ -41,7 +41,7 @@ app.get('/listings', (req, res) => {
 
 app.get('/profile', (req, res) => {
   knex('users')
-    .where('id', 1)
+    .where('id', 9)
     .then(user => res.json(user))
 })
 

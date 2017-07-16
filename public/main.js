@@ -228,7 +228,10 @@ function renderUserInfo(user) {
   const $profileName = document.querySelector('#profile-name')
   const $profileEmail = document.querySelector('#profile-email')
   const $profilePhone = document.querySelector('#profile-phone')
+  const $profilePic = document.querySelector('#profile-pic')
   $profileName.textContent = user.first_name + ' ' + user.last_name
   $profileEmail.textContent = user.email
   $profilePhone.textContent = user.phone
+  $profilePic.src = 'uploads/' + user.picture
+  console.log(user)
 }
