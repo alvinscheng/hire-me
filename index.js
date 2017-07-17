@@ -41,7 +41,7 @@ app.get('/listings', (req, res) => {
 
 app.get('/profile/:id', (req, res) => {
   knex('users')
-    .where('id', Number(req.params.id))
+    .where('id', req.params.id)
     .then(user => res.json(user))
 })
 
@@ -63,7 +63,7 @@ app.put('/users/:id', upload.single('picture'), (req, res) => {
     user.picture = req.file.filename
   }
   knex('users')
-    .where('id', Number(req.params.id))
+    .where('id', req.params.id)
     .update(snakecaseKeys(user))
     .then(() => res.sendStatus(200))
     .catch(err => {
