@@ -56,7 +56,7 @@ $createUser.addEventListener('submit', () => {
       .then(() => {
         $createUser.reset()
         renderSelectUsers()
-        window.location.href = '#profile'
+        router.goTo('profile')
       })
   }
   else if (window.location.hash === '#profile/edit') {
@@ -64,7 +64,7 @@ $createUser.addEventListener('submit', () => {
       .then(() => {
         $createUser.reset()
         renderSelectUsers()
-        window.location.href = '#profile'
+        router.goTo('profile')
       })
   }
 })
@@ -104,6 +104,10 @@ class HashRouter {
     const handler = this.handlers[viewId]
     if (!handler) return
     handler()
+  }
+
+  goTo(hash) {
+    window.location.href = '#' + hash
   }
 
   listen() {
