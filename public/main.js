@@ -11,6 +11,7 @@ const $createProfilePage = document.querySelector('#create-profile-page')
 const $searchPage = document.querySelector('#search-page')
 const $navItems = document.querySelectorAll('.nav-item')
 
+const pages = [$searchPage, $profilePage, $createProfilePage]
 let userId = 9
 let jobList = []
 let pageNums = 1
@@ -38,9 +39,8 @@ $jobSearch.addEventListener('submit', () => {
     .then(listings => {
       $jobSearchContainer.classList.remove('home')
       $sideBar.classList.remove('hidden')
-      $searchPage.classList.remove('hidden')
-      $profilePage.classList.add('hidden')
       $backgroundImage.classList.add('hidden')
+      showPage($searchPage)
       jobList = listings.map(listing => (renderListing(listing)))
       changePage(1)
     })
@@ -102,27 +102,19 @@ const $pages = document.querySelectorAll('.page')
 const router = new HashRouter($pages)
 
 router.when('search', () => {
-  $profilePage.classList.add('hidden')
-  $createProfilePage.classList.add('hidden')
-  $searchPage.classList.remove('hidden')
+  showPage($searchPage)
 })
 
 router.when('profile', () => {
-  $searchPage.classList.add('hidden')
-  $profilePage.classList.remove('hidden')
-  $createProfilePage.classList.add('hidden')
+  showPage($profilePage)
 })
 
 router.when('profile/create', () => {
-  $searchPage.classList.add('hidden')
-  $profilePage.classList.add('hidden')
-  $createProfilePage.classList.remove('hidden')
+  showPage($createProfilePage)
 })
 
 router.when('profile/edit', () => {
-  $searchPage.classList.add('hidden')
-  $profilePage.classList.add('hidden')
-  $createProfilePage.classList.remove('hidden')
+  showPage($createProfilePage)
 })
 
 router.listen()
@@ -267,4 +259,13 @@ function renderUserInfo(user) {
     const $profilePic = document.querySelector('#profile-pic')
     $profilePic.src = 'uploads/' + user.picture
   }
+}
+
+function showPage(page) {
+  page.classList.remove('hidden')
+  pages.forEach(view => {
+    if (view !== page) {
+      view.classList.add('hidden')
+    }
+  })
 }
