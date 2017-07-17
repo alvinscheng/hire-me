@@ -7,10 +7,17 @@ const $pageNumbers = document.querySelector('#page-numbers')
 const $sideBar = document.querySelector('#sidebar')
 const $picUpload = document.querySelector('#pic-upload')
 const $profilePage = document.querySelector('#profile-page')
+const $createProfilePage = document.querySelector('#create-profile-page')
 const $searchPage = document.querySelector('#search-page')
 const $navItems = document.querySelectorAll('.nav-item')
 let jobList = []
 let pageNums = 1
+
+window.addEventListener('load', () => {
+  get('/profile')
+    .then(response => response.json())
+    .then(user => renderUserInfo(user[0]))
+})
 
 $jobSearch.addEventListener('submit', () => {
   event.preventDefault()
@@ -48,10 +55,6 @@ $picUpload.addEventListener('change', previewPhoto)
 $navItems.forEach($navItem => {
   $navItem.addEventListener('click', () => {
     $navItem.classList.add('active')
-    get('/profile')
-      .then(response => response.json())
-      .then(user => renderUserInfo(user[0]))
-
     $navItems.forEach($item => {
       if ($item !== $navItem) {
         $item.classList.remove('active')
@@ -93,12 +96,20 @@ const router = new HashRouter($pages)
 
 router.when('search', () => {
   $profilePage.classList.add('hidden')
+  $createProfilePage.classList.add('hidden')
   $searchPage.classList.remove('hidden')
 })
 
 router.when('profile', () => {
   $searchPage.classList.add('hidden')
   $profilePage.classList.remove('hidden')
+  $createProfilePage.classList.add('hidden')
+})
+
+router.when('profile/create', () => {
+  $searchPage.classList.add('hidden')
+  $profilePage.classList.add('hidden')
+  $createProfilePage.classList.remove('hidden')
 })
 
 router.listen()
@@ -228,10 +239,11 @@ function renderUserInfo(user) {
   const $profileName = document.querySelector('#profile-name')
   const $profileEmail = document.querySelector('#profile-email')
   const $profilePhone = document.querySelector('#profile-phone')
-  const $profilePic = document.querySelector('#profile-pic')
   $profileName.textContent = user.first_name + ' ' + user.last_name
   $profileEmail.textContent = user.email
   $profilePhone.textContent = user.phone
-  $profilePic.src = 'uploads/' + user.picture
-  console.log(user)
+  if (user.picture) {
+    const $profilePic = document.querySelector('#profile-pic')
+    $profilePic.src = 'uploads/' + user.picture
+  }
 }
