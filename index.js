@@ -39,9 +39,9 @@ app.get('/listings', (req, res) => {
   })
 })
 
-app.get('/profile', (req, res) => {
+app.get('/profile/:id', (req, res) => {
   knex('users')
-    .where('id', 9)
+    .where('id', Number(req.params.id))
     .then(user => res.json(user))
 })
 

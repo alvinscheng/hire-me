@@ -14,14 +14,13 @@ const $preview = document.querySelector('#profile-pic-preview')
 const $selectUsers = document.querySelector('#users')
 
 const pages = [$searchPage, $profilePage, $createProfilePage]
-let userId = 9
+let userId = 10
 let jobList = []
 let pageNums = 1
 
 window.addEventListener('load', () => {
   renderSelectUsers()
-  get('/profile')
-    .then(response => response.json())
+  getCurrentUser()
     .then(user => renderUserInfo(user[0]))
 })
 
@@ -58,6 +57,12 @@ $createUser.addEventListener('submit', () => {
   else if (window.location.hash === '#profile/edit') {
     put('/users/' + userId, formData)
   }
+})
+
+$selectUsers.addEventListener('change', event => {
+  userId = Number(event.target.value)
+  getCurrentUser()
+    .then(user => renderUserInfo(user[0]))
 })
 
 $picUpload.addEventListener('change', previewPhoto)
@@ -109,8 +114,7 @@ router.when('search', () => {
 })
 
 router.when('profile', () => {
-  get('/profile')
-    .then(response => response.json())
+  getCurrentUser()
     .then(user => renderUserInfo(user[0]))
   showPage($profilePage)
 })
@@ -127,8 +131,7 @@ router.when('profile/create', () => {
 })
 
 router.when('profile/edit', () => {
-  get('/profile')
-    .then(response => response.json())
+  getCurrentUser()
     .then(users => renderEditFormInfo(users[0]))
   showPage($createProfilePage)
 })
@@ -310,4 +313,8 @@ function showPage(page) {
       view.classList.add('hidden')
     }
   })
+}
+
+function getCurrentUser() {
+  return get('/profile/' + userId).then(response => response.json())
 }
