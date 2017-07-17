@@ -34,7 +34,8 @@
   text-align: center;
 }
 
-#profile-page {
+#profile-page,
+#create-profile-page {
   padding: 40px;
 }
 
