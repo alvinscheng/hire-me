@@ -53,15 +53,17 @@ $createUser.addEventListener('submit', () => {
   const formData = new FormData($createUser)
   if (window.location.hash === '#profile/create') {
     post('/users', formData)
-      .then(() => $createUser.reset())
       .then(() => {
+        $createUser.reset()
+        renderSelectUsers()
         window.location.href = '#profile'
       })
   }
   else if (window.location.hash === '#profile/edit') {
     put('/users/' + userId, formData)
-      .then(() => $createUser.reset())
       .then(() => {
+        $createUser.reset()
+        renderSelectUsers()
         window.location.href = '#profile'
       })
   }
@@ -210,6 +212,7 @@ function renderSelectUsers() {
   get('/users')
     .then(response => response.json())
     .then(users => {
+      $selectUsers.innerHTML = ''
       users.forEach(user => {
         const $selectUser = document.createElement('option')
         $selectUser.setAttribute('value', user.id)
