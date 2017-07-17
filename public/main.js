@@ -10,6 +10,7 @@ const $profilePage = document.querySelector('#profile-page')
 const $createProfilePage = document.querySelector('#create-profile-page')
 const $searchPage = document.querySelector('#search-page')
 const $navItems = document.querySelectorAll('.nav-item')
+const $preview = document.querySelector('#profile-pic-preview')
 
 const pages = [$searchPage, $profilePage, $createProfilePage]
 let userId = 9
@@ -106,14 +107,27 @@ router.when('search', () => {
 })
 
 router.when('profile', () => {
+  get('/profile')
+    .then(response => response.json())
+    .then(user => renderUserInfo(user[0]))
   showPage($profilePage)
 })
 
 router.when('profile/create', () => {
+  renderEditFormInfo({
+    first_name: '',
+    last_name: '',
+    email: '',
+    phone: '',
+    picture: ''
+  })
   showPage($createProfilePage)
 })
 
 router.when('profile/edit', () => {
+  get('/profile')
+    .then(response => response.json())
+    .then(user => renderEditFormInfo(user[0]))
   showPage($createProfilePage)
 })
 
@@ -144,7 +158,6 @@ function put(path, data, header) {
 }
 
 function previewPhoto() {
-  const $preview = document.querySelector('#profile-pic-preview')
   const reader = new FileReader()
   reader.addEventListener('load', () => {
     $preview.src = reader.result
@@ -258,6 +271,20 @@ function renderUserInfo(user) {
   if (user.picture) {
     const $profilePic = document.querySelector('#profile-pic')
     $profilePic.src = 'uploads/' + user.picture
+  }
+}
+
+function renderEditFormInfo(user) {
+  const $editFirstName = document.querySelector('#first-name')
+  const $editLastName = document.querySelector('#last-name')
+  const $editEmail = document.querySelector('#email')
+  const $editPhone = document.querySelector('#phone')
+  $editFirstName.setAttribute('placeholder', user.first_name)
+  $editLastName.setAttribute('placeholder', user.last_name)
+  $editEmail.setAttribute('placeholder', user.email)
+  $editPhone.setAttribute('placeholder', user.phone)
+  if (user.picture) {
+    $preview.src = 'uploads/' + user.picture
   }
 }
 
