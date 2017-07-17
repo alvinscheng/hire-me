@@ -11,6 +11,7 @@ const $createProfilePage = document.querySelector('#create-profile-page')
 const $searchPage = document.querySelector('#search-page')
 const $navItems = document.querySelectorAll('.nav-item')
 const $preview = document.querySelector('#profile-pic-preview')
+const $selectUsers = document.querySelector('#users')
 
 const pages = [$searchPage, $profilePage, $createProfilePage]
 let userId = 9
@@ -18,6 +19,7 @@ let jobList = []
 let pageNums = 1
 
 window.addEventListener('load', () => {
+  renderSelectUsers()
   get('/profile')
     .then(response => response.json())
     .then(user => renderUserInfo(user[0]))
@@ -127,7 +129,7 @@ router.when('profile/create', () => {
 router.when('profile/edit', () => {
   get('/profile')
     .then(response => response.json())
-    .then(user => renderEditFormInfo(user[0]))
+    .then(users => renderEditFormInfo(users[0]))
   showPage($createProfilePage)
 })
 
@@ -191,6 +193,19 @@ function changePage(page) {
   }
   window.location.hash = page
   renderPageNums(page)
+}
+
+function renderSelectUsers() {
+  get('/users')
+    .then(response => response.json())
+    .then(users => {
+      users.forEach(user => {
+        const $selectUser = document.createElement('option')
+        $selectUser.setAttribute('value', user.id)
+        $selectUser.textContent = user.first_name + ' ' + user.last_name
+        $selectUsers.appendChild($selectUser)
+      })
+    })
 }
 
 function renderPageNums(current) {

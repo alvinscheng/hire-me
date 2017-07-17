@@ -45,6 +45,13 @@ app.get('/profile', (req, res) => {
     .then(user => res.json(user))
 })
 
+app.get('/users', (req, res) => {
+  knex
+    .select()
+    .from('users')
+    .then(users => res.json(users))
+})
+
 app.put('/users/:id', upload.single('picture'), (req, res) => {
   const user = snakecaseKeys(req.body)
   if (req.file) {
