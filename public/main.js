@@ -10,6 +10,8 @@ const $profilePage = document.querySelector('#profile-page')
 const $createProfilePage = document.querySelector('#create-profile-page')
 const $searchPage = document.querySelector('#search-page')
 const $navItems = document.querySelectorAll('.nav-item')
+
+let userId = 9
 let jobList = []
 let pageNums = 1
 
@@ -47,7 +49,12 @@ $jobSearch.addEventListener('submit', () => {
 $createUser.addEventListener('submit', () => {
   event.preventDefault()
   const formData = new FormData($createUser)
-  post('/users', formData)
+  if (window.location.hash === '#profile/create') {
+    post('/users', formData)
+  }
+  else if (window.location.hash === '#profile/edit') {
+    put('/users/' + userId, formData)
+  }
 })
 
 $picUpload.addEventListener('change', previewPhoto)
@@ -112,6 +119,12 @@ router.when('profile/create', () => {
   $createProfilePage.classList.remove('hidden')
 })
 
+router.when('profile/edit', () => {
+  $searchPage.classList.add('hidden')
+  $profilePage.classList.add('hidden')
+  $createProfilePage.classList.remove('hidden')
+})
+
 router.listen()
 
 function search(path, queries) {
@@ -125,6 +138,14 @@ function get(path) {
 function post(path, data, header) {
   return fetch(path, {
     method: 'POST',
+    headers: header,
+    body: data
+  })
+}
+
+function put(path, data, header) {
+  return fetch(path, {
+    method: 'PUT',
     headers: header,
     body: data
   })

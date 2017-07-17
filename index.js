@@ -45,4 +45,19 @@ app.get('/profile', (req, res) => {
     .then(user => res.json(user))
 })
 
+app.put('/users/:id', upload.single('picture'), (req, res) => {
+  const user = snakecaseKeys(req.body)
+  if (req.file) {
+    user.picture = req.file.filename
+  }
+  knex('users')
+    .where('id', Number(req.params.id))
+    .update(user)
+    .then(() => res.sendStatus(200))
+    .catch(err => {
+      console.log(err)
+      res.sendStatus(404)
+    })
+})
+
 app.listen(3000, console.log('Listening on 3000!'))
