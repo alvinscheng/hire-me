@@ -53,11 +53,18 @@ $createUser.addEventListener('submit', () => {
   const formData = new FormData($createUser)
   if (window.location.hash === '#profile/create') {
     post('/users', formData)
+      .then(() => $createUser.reset())
+      .then(() => {
+        window.location.href = '#profile'
+      })
   }
   else if (window.location.hash === '#profile/edit') {
     put('/users/' + userId, formData)
+      .then(() => $createUser.reset())
+      .then(() => {
+        window.location.href = '#profile'
+      })
   }
-  $createUser.reset()
 })
 
 $selectUsers.addEventListener('change', event => {
