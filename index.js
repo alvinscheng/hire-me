@@ -53,13 +53,18 @@ app.get('/users', (req, res) => {
 })
 
 app.put('/users/:id', upload.single('picture'), (req, res) => {
-  const user = snakecaseKeys(req.body)
+  const user = {}
+  for (const key in req.body) {
+    if (req.body[key]) {
+      user[key] = req.body[key]
+    }
+  }
   if (req.file) {
     user.picture = req.file.filename
   }
   knex('users')
     .where('id', Number(req.params.id))
-    .update(user)
+    .update(snakecaseKeys(user))
     .then(() => res.sendStatus(200))
     .catch(err => {
       console.log(err)

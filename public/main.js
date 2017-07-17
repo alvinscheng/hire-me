@@ -57,6 +57,7 @@ $createUser.addEventListener('submit', () => {
   else if (window.location.hash === '#profile/edit') {
     put('/users/' + userId, formData)
   }
+  $createUser.reset()
 })
 
 $selectUsers.addEventListener('change', event => {
