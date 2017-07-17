@@ -133,7 +133,7 @@ router.when('profile/create', () => {
     last_name: '',
     email: '',
     phone: '',
-    picture: ''
+    picture: 'profile-photo.png'
   })
   showPage($createProfilePage)
 })
