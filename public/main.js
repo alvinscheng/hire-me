@@ -51,22 +51,12 @@ $jobSearch.addEventListener('submit', () => {
 $createUser.addEventListener('submit', () => {
   event.preventDefault()
   const formData = new FormData($createUser)
-  if (window.location.hash === '#profile/create') {
-    post('/users', formData)
-      .then(() => {
-        $createUser.reset()
-        renderSelectUsers()
-        router.goTo('profile')
-      })
-  }
-  else if (window.location.hash === '#profile/edit') {
-    put('/users/' + userId, formData)
-      .then(() => {
-        $createUser.reset()
-        renderSelectUsers()
-        router.goTo('profile')
-      })
-  }
+  save('/users', formData, formData.get('id'))
+    .then(() => {
+      $createUser.reset()
+      renderSelectUsers()
+      router.goTo('profile')
+    })
 })
 
 $selectUsers.addEventListener('change', event => {
@@ -139,6 +129,7 @@ router.when('profile/create', () => {
     last_name: '',
     email: '',
     phone: '',
+    id: '',
     picture: 'profile-photo.png'
   })
   showPage($createProfilePage)
@@ -312,10 +303,12 @@ function renderEditFormInfo(user) {
   const $editLastName = document.querySelector('#last-name')
   const $editEmail = document.querySelector('#email')
   const $editPhone = document.querySelector('#phone')
+  const $userId = document.querySelector('#user-id')
   $editFirstName.setAttribute('placeholder', user.first_name)
   $editLastName.setAttribute('placeholder', user.last_name)
   $editEmail.setAttribute('placeholder', user.email)
   $editPhone.setAttribute('placeholder', user.phone)
+  $userId.value = user.id
   if (user.picture) {
     $preview.src = 'uploads/' + user.picture
   }
@@ -332,4 +325,14 @@ function showPage(page) {
 
 function getCurrentUser() {
   return get('/profile/' + userId).then(response => response.json())
+}
+
+function save(path, data, id) {
+  if (id) {
+    return put(path + '/' + id, data)
+  }
+  else {
+    data.delete('id')
+    return post(path, data)
+  }
 }
