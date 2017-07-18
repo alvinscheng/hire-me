@@ -8,7 +8,9 @@ const knex = require('knex')({
   dialect: 'pg',
   connection: 'postgres://localhost:5432/hire-me'
 })
+const usersGateway = require('./users-gateway')
 
+const users = usersGateway(knex)
 const upload = multer({ dest: 'public/uploads/' })
 const app = express()
 
@@ -26,10 +28,8 @@ app.post('/users', upload.single('picture'), (req, res) => {
   if (req.file) {
     user.picture = req.file.filename
   }
-
-  knex
-    .insert(user)
-    .into('users')
+  users
+    .create(user)
     .then(() => res.sendStatus(201))
 })
 
@@ -40,15 +40,14 @@ app.get('/listings', (req, res) => {
 })
 
 app.get('/profile/:id', (req, res) => {
-  knex('users')
-    .where('id', req.params.id)
+  users
+    .findById(req.params.id)
     .then(user => res.json(user))
 })
 
 app.get('/users', (req, res) => {
-  knex
-    .select()
-    .from('users')
+  users
+    .find()
     .then(users => res.json(users))
 })
 
@@ -62,14 +61,9 @@ app.put('/users/:id', upload.single('picture'), (req, res) => {
   if (req.file) {
     user.picture = req.file.filename
   }
-  knex('users')
-    .where('id', req.params.id)
-    .update(snakecaseKeys(user))
+  users
+    .updateById(req.params.id, snakecaseKeys(user))
     .then(() => res.sendStatus(200))
-    .catch(err => {
-      console.log(err)
-      res.sendStatus(404)
-    })
 })
 
 app.listen(3000, console.log('Listening on 3000!'))

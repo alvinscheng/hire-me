@@ -21,7 +21,7 @@ let pageNums = 1
 window.addEventListener('load', () => {
   renderSelectUsers()
   getCurrentUser()
-    .then(user => renderUserInfo(user[0]))
+    .then(user => renderUserInfo(user))
 })
 
 $jobSearch.addEventListener('submit', () => {
@@ -62,7 +62,7 @@ $createUser.addEventListener('submit', () => {
 $selectUsers.addEventListener('change', event => {
   userId = Number(event.target.value)
   getCurrentUser()
-    .then(user => renderUserInfo(user[0]))
+    .then(user => renderUserInfo(user))
 })
 
 $picUpload.addEventListener('change', previewPhoto)
@@ -119,7 +119,7 @@ router.when('search', () => {
 
 router.when('profile', () => {
   getCurrentUser()
-    .then(user => renderUserInfo(user[0]))
+    .then(user => renderUserInfo(user))
   showPage($profilePage)
 })
 
@@ -137,7 +137,7 @@ router.when('profile/create', () => {
 
 router.when('profile/edit', () => {
   getCurrentUser()
-    .then(users => renderEditFormInfo(users[0]))
+    .then(users => renderEditFormInfo(users))
   showPage($createProfilePage)
 })
 
