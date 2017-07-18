@@ -8,9 +8,10 @@ const knex = require('knex')({
   dialect: 'pg',
   connection: 'postgres://localhost:5432/hire-me'
 })
-const usersGateway = require('./users-gateway')
+const dbGateway = require('./db-gateway')
 
-const users = usersGateway(knex)
+const applications = dbGateway(knex, 'applications')
+const users = dbGateway(knex, 'users')
 const upload = multer({ dest: 'public/uploads/' })
 const app = express()
 
@@ -34,10 +35,8 @@ app.post('/users', upload.single('picture'), (req, res) => {
 })
 
 app.post('/applications/:id', (req, res) => {
-  knex
-    .insert(snakecaseKeys(req.body))
-    .into('applications')
-    .returning('*')
+  applications
+    .create(snakecaseKeys(req.body))
     .then(() => res.sendStatus(201))
 })
 
