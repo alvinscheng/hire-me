@@ -33,6 +33,14 @@ app.post('/users', upload.single('picture'), (req, res) => {
     .then(() => res.sendStatus(201))
 })
 
+app.post('/applications/:id', (req, res) => {
+  knex
+    .insert(snakecaseKeys(req.body))
+    .into('applications')
+    .returning('*')
+    .then(() => res.sendStatus(201))
+})
+
 app.get('/listings', (req, res) => {
   indeed.query(queryOptions).then(listings => {
     res.json(listings)
