@@ -268,6 +268,7 @@ function renderListing(listing) {
   const $date = document.createElement('p')
   const $summary = document.createElement('p')
   const $link = document.createElement('a')
+  const $linkButton = document.createElement('button')
   const { title, company, location, summary, url, postDate } = listing
 
   $job.textContent = title
@@ -275,9 +276,11 @@ function renderListing(listing) {
   $location.textContent = location
   $date.textContent = 'Posted: ' + postDate
   $summary.textContent = summary
-  $link.textContent = 'Apply Here'
+  $linkButton.textContent = 'Apply Here'
+  $linkButton.classList.add('btn', 'btn-default', 'btn-xs')
   $link.setAttribute('href', url)
   $link.setAttribute('target', '_blank')
+  $link.appendChild($linkButton)
 
   $listing.appendChild($job)
   $listing.appendChild($company)
@@ -297,6 +300,7 @@ function createJournalButton(listing) {
   }
   const $journalButton = document.createElement('button')
   $journalButton.textContent = 'Add to Journal'
+  $journalButton.classList.add('btn', 'btn-primary', 'btn-xs')
 
   $journalButton.addEventListener('click', () => {
     post('/applications/' + userId, JSON.stringify(app), { 'Content-Type': 'application/json' })
