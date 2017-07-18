@@ -10,6 +10,19 @@
     <div id="background-image">
       <div id="opaque-layer"></div>
     </div>
+    <nav id="sidebar" class="col-md-2 hidden">
+      <ul class="nav nav-pills nav-stacked">
+        <li class="nav-item active">
+          <a href="#search" id="nav-search">Search</a>
+        </li>
+        <li class="nav-item">
+          <a href="#profile" id="nav-profile">Profile</a>
+        </li>
+        <li class="nav-item">
+          <a href="#profile/resumes" id="nav-resumes">Resumes</a>
+        </li>
+      </ul>
+    </nav>
     <header id="job-search-container" class="home">
       <div class="logo-home">
         <a href="/">
@@ -24,19 +37,6 @@
     </header>
     <div class="container-fluid">
       <div class="row">
-        <nav id="sidebar" class="col-md-2 hidden">
-          <ul class="nav nav-pills nav-stacked">
-            <li class="nav-item active">
-              <a href="#search" id="nav-search">Search</a>
-            </li>
-            <li class="nav-item">
-              <a href="#profile" id="nav-profile">Profile</a>
-            </li>
-            <li class="nav-item">
-              <a href="#profile/resumes" id="nav-resumes">Resumes</a>
-            </li>
-          </ul>
-        </nav>
         <div class="col-md-8 col-md-offset-2">
           <div id="search-page" class="page">
             <ul id="listings"></ul>
@@ -44,16 +44,33 @@
           </div>
 
           <div id="profile-page" class="page hidden">
-            <label class="pull-right hidden">
-              User:
-              <select id="users">
-                <option value="">---</option>
-              </select>
-            </label>
+            <div class="row">
+              <a href="#profile/create">
+                <button type="button" class="btn btn-default btn-sm" name="new-profile">New Profile</button>
+              </a>
+              <label class="pull-right">
+                User:
+                <select id="users"></select>
+              </label>
+            </div>
+            <div id="user-profile" class="row">
+              <div>
+                <img id="profile-pic" class="profile-pic"/>
+              </div>
+              <h4 id="profile-name"></h4>
+              <p id="profile-email"></p>
+              <p id="profile-phone"></p>
+              <a href="#profile/edit">
+                <button type="button" class="btn btn-primary btn-xs" name="edit-profile">Edit Profile</button>
+              </a>
+            </div>
+          </div>
+
+          <div id="create-profile-page" class="page hidden">
             <form id="create-user">
               <div class="col-sm-3">
                 <div>
-                  <img id="profile-pic"/>
+                  <img id="profile-pic-preview" class="profile-pic"/>
                 </div>
                 <input id="pic-upload" name="picture" type="file"/>
               </div>
@@ -82,6 +99,7 @@
                     <input type="text" name="phone" class="form-control" id="phone"/>
                   </div>
                 </div>
+                <input type="text" name="id" class="hidden" id="user-id"/>
                 <div class="form-group">
                   <div class="col-sm-offset-4 col-sm-8">
                     <button type="submit" class="btn btn-default">Submit</button>

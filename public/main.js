@@ -7,10 +7,22 @@ const $pageNumbers = document.querySelector('#page-numbers')
 const $sideBar = document.querySelector('#sidebar')
 const $picUpload = document.querySelector('#pic-upload')
 const $profilePage = document.querySelector('#profile-page')
+const $createProfilePage = document.querySelector('#create-profile-page')
 const $searchPage = document.querySelector('#search-page')
 const $navItems = document.querySelectorAll('.nav-item')
+const $preview = document.querySelector('#profile-pic-preview')
+const $selectUsers = document.querySelector('#users')
+
+const pages = [$searchPage, $profilePage, $createProfilePage]
+let userId = 10
 let jobList = []
 let pageNums = 1
+
+window.addEventListener('load', () => {
+  renderSelectUsers()
+  getCurrentUser()
+    .then(user => renderUserInfo(user))
+})
 
 $jobSearch.addEventListener('submit', () => {
   event.preventDefault()
@@ -29,9 +41,8 @@ $jobSearch.addEventListener('submit', () => {
     .then(listings => {
       $jobSearchContainer.classList.remove('home')
       $sideBar.classList.remove('hidden')
-      $searchPage.classList.remove('hidden')
-      $profilePage.classList.add('hidden')
       $backgroundImage.classList.add('hidden')
+      showPage($searchPage)
       jobList = listings.map(listing => (renderListing(listing)))
       changePage(1)
     })
@@ -40,7 +51,18 @@ $jobSearch.addEventListener('submit', () => {
 $createUser.addEventListener('submit', () => {
   event.preventDefault()
   const formData = new FormData($createUser)
-  post('/users', formData)
+  save('/users', formData, formData.get('id'))
+    .then(() => {
+      $createUser.reset()
+      renderSelectUsers()
+      router.goTo('profile')
+    })
+})
+
+$selectUsers.addEventListener('change', event => {
+  userId = Number(event.target.value)
+  getCurrentUser()
+    .then(user => renderUserInfo(user))
 })
 
 $picUpload.addEventListener('change', previewPhoto)
@@ -48,7 +70,6 @@ $picUpload.addEventListener('change', previewPhoto)
 $navItems.forEach($navItem => {
   $navItem.addEventListener('click', () => {
     $navItem.classList.add('active')
-
     $navItems.forEach($item => {
       if ($item !== $navItem) {
         $item.classList.remove('active')
@@ -56,6 +77,71 @@ $navItems.forEach($navItem => {
     })
   })
 })
+
+class HashRouter {
+  constructor($views) {
+    this.$views = Array.from($views)
+    this.handlers = {}
+    this.isListening = false
+  }
+
+  when(hash, handler) {
+    this.handlers[hash] = handler
+  }
+
+  match(hash) {
+    const viewId = hash.replace('#', '')
+    const handler = this.handlers[viewId]
+    if (!handler) return
+    handler()
+  }
+
+  goTo(hash) {
+    window.location.href = '#' + hash
+  }
+
+  listen() {
+    if (this.isListening) return
+    window.addEventListener('hashchange', () => {
+      this.match(window.location.hash)
+    })
+    this.isListening = true
+    window.dispatchEvent(new Event('hashchange'))
+  }
+}
+
+const $pages = document.querySelectorAll('.page')
+const router = new HashRouter($pages)
+
+router.when('search', () => {
+  showPage($searchPage)
+})
+
+router.when('profile', () => {
+  getCurrentUser()
+    .then(user => renderUserInfo(user))
+  showPage($profilePage)
+})
+
+router.when('profile/create', () => {
+  renderEditFormInfo({
+    first_name: '',
+    last_name: '',
+    email: '',
+    phone: '',
+    id: '',
+    picture: 'profile-photo.png'
+  })
+  showPage($createProfilePage)
+})
+
+router.when('profile/edit', () => {
+  getCurrentUser()
+    .then(users => renderEditFormInfo(users))
+  showPage($createProfilePage)
+})
+
+router.listen()
 
 function search(path, queries) {
   return fetch(path + queryString(queries), { method: 'POST' })
@@ -73,8 +159,15 @@ function post(path, data, header) {
   })
 }
 
+function put(path, data, header) {
+  return fetch(path, {
+    method: 'PUT',
+    headers: header,
+    body: data
+  })
+}
+
 function previewPhoto() {
-  const $preview = document.querySelector('#profile-pic')
   const reader = new FileReader()
   reader.addEventListener('load', () => {
     $preview.src = reader.result
@@ -108,6 +201,20 @@ function changePage(page) {
   }
   window.location.hash = page
   renderPageNums(page)
+}
+
+function renderSelectUsers() {
+  get('/users')
+    .then(response => response.json())
+    .then(users => {
+      $selectUsers.innerHTML = ''
+      users.forEach(user => {
+        const $selectUser = document.createElement('option')
+        $selectUser.setAttribute('value', user.id)
+        $selectUser.textContent = user.first_name + ' ' + user.last_name
+        $selectUsers.appendChild($selectUser)
+      })
+    })
 }
 
 function renderPageNums(current) {
@@ -145,48 +252,6 @@ function renderPageNums(current) {
   addPageRoutes()
 }
 
-class HashRouter {
-  constructor($views) {
-    this.$views = Array.from($views)
-    this.handlers = {}
-    this.isListening = false
-  }
-
-  when(hash, handler) {
-    this.handlers[hash] = handler
-  }
-
-  match(hash) {
-    const viewId = hash.replace('#', '')
-    const handler = this.handlers[viewId]
-    if (!handler) return
-    handler()
-  }
-
-  listen() {
-    if (this.isListening) return
-    window.addEventListener('hashchange', () => {
-      this.match(window.location.hash)
-    })
-    this.isListening = true
-    window.dispatchEvent(new Event('hashchange'))
-  }
-}
-
-const $pages = document.querySelectorAll('.page')
-const router = new HashRouter($pages)
-router.listen()
-
-router.when('search', () => {
-  $profilePage.classList.add('hidden')
-  $searchPage.classList.remove('hidden')
-})
-
-router.when('profile', () => {
-  $searchPage.classList.add('hidden')
-  $profilePage.classList.remove('hidden')
-})
-
 function addPageRoutes() {
   for (let i = 1; i <= pageNums; i++) {
     router.when(i, () => {
@@ -218,4 +283,56 @@ function renderListing(listing) {
   $listing.appendChild($summary)
   $listing.appendChild($link)
   return $listing
+}
+
+function renderUserInfo(user) {
+  const $profileName = document.querySelector('#profile-name')
+  const $profileEmail = document.querySelector('#profile-email')
+  const $profilePhone = document.querySelector('#profile-phone')
+  $profileName.textContent = user.first_name + ' ' + user.last_name
+  $profileEmail.textContent = user.email
+  $profilePhone.textContent = user.phone
+  if (user.picture) {
+    const $profilePic = document.querySelector('#profile-pic')
+    $profilePic.src = 'uploads/' + user.picture
+  }
+}
+
+function renderEditFormInfo(user) {
+  const $editFirstName = document.querySelector('#first-name')
+  const $editLastName = document.querySelector('#last-name')
+  const $editEmail = document.querySelector('#email')
+  const $editPhone = document.querySelector('#phone')
+  const $userId = document.querySelector('#user-id')
+  $editFirstName.setAttribute('placeholder', user.first_name)
+  $editLastName.setAttribute('placeholder', user.last_name)
+  $editEmail.setAttribute('placeholder', user.email)
+  $editPhone.setAttribute('placeholder', user.phone)
+  $userId.value = user.id
+  if (user.picture) {
+    $preview.src = 'uploads/' + user.picture
+  }
+}
+
+function showPage(page) {
+  page.classList.remove('hidden')
+  pages.forEach(view => {
+    if (view !== page) {
+      view.classList.add('hidden')
+    }
+  })
+}
+
+function getCurrentUser() {
+  return get('/profile/' + userId).then(response => response.json())
+}
+
+function save(path, data, id) {
+  if (id) {
+    return put(path + '/' + id, data)
+  }
+  else {
+    data.delete('id')
+    return post(path, data)
+  }
 }

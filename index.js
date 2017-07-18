@@ -3,12 +3,15 @@ const indeed = require('indeed-scraper')
 const bodyParser = require('body-parser')
 const multer = require('multer')
 const queryOptions = require('./query-options')
+const snakecaseKeys = require('snakecase-keys')
 const knex = require('knex')({
   dialect: 'pg',
   connection: 'postgres://localhost:5432/hire-me'
 })
+const usersGateway = require('./users-gateway')
 
-const upload = multer({ dest: 'uploads/' })
+const users = usersGateway(knex)
+const upload = multer({ dest: 'public/uploads/' })
 const app = express()
 
 app.use(express.static('public'))
@@ -21,18 +24,12 @@ app.post('/', (req, res) => {
 })
 
 app.post('/users', upload.single('picture'), (req, res) => {
-  const user = req.body
-  const dbUser = {
-    first_name: user.firstName,
-    last_name: user.lastName,
-    email: user.email,
-    phone: user.phone,
-    picture: req.file.filename
+  const user = snakecaseKeys(req.body)
+  if (req.file) {
+    user.picture = req.file.filename
   }
-
-  knex
-    .insert(dbUser)
-    .into('users')
+  users
+    .create(user)
     .then(() => res.sendStatus(201))
 })
 
@@ -40,6 +37,33 @@ app.get('/listings', (req, res) => {
   indeed.query(queryOptions).then(listings => {
     res.json(listings)
   })
+})
+
+app.get('/profile/:id', (req, res) => {
+  users
+    .findById(req.params.id)
+    .then(user => res.json(user))
+})
+
+app.get('/users', (req, res) => {
+  users
+    .find()
+    .then(users => res.json(users))
+})
+
+app.put('/users/:id', upload.single('picture'), (req, res) => {
+  const user = {}
+  for (const key in req.body) {
+    if (req.body[key]) {
+      user[key] = req.body[key]
+    }
+  }
+  if (req.file) {
+    user.picture = req.file.filename
+  }
+  users
+    .updateById(req.params.id, snakecaseKeys(user))
+    .then(() => res.sendStatus(200))
 })
 
 app.listen(3000, console.log('Listening on 3000!'))
