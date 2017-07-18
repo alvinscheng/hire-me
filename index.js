@@ -10,7 +10,7 @@ const knex = require('knex')({
 })
 const dbGateway = require('./db-gateway')
 
-const applications = dbGateway(knex, 'applications')
+// const applications = dbGateway(knex, 'applications')
 const users = dbGateway(knex, 'users')
 const upload = multer({ dest: 'public/uploads/' })
 const app = express()
@@ -35,9 +35,12 @@ app.post('/users', upload.single('picture'), (req, res) => {
 })
 
 app.post('/applications/:id', (req, res) => {
-  applications
-    .create(snakecaseKeys(req.body))
-    .then(() => res.sendStatus(201))
+  const app = req.body
+  app.userId = req.params.id
+  console.log(app)
+//  applications
+//    .create(snakecaseKeys(req.body))
+//    .then(() => res.sendStatus(201))
 })
 
 app.get('/listings', (req, res) => {

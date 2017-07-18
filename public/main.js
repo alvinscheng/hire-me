@@ -269,6 +269,7 @@ function renderListing(listing) {
   const $summary = document.createElement('p')
   const $link = document.createElement('a')
   const { title, company, location, summary, url, postDate } = listing
+
   $job.textContent = title
   $company.textContent = company + '- '
   $location.textContent = location
@@ -276,13 +277,32 @@ function renderListing(listing) {
   $summary.textContent = summary
   $link.textContent = 'Apply Here'
   $link.setAttribute('href', url)
+  $link.setAttribute('target', '_blank')
+
   $listing.appendChild($job)
   $listing.appendChild($company)
   $listing.appendChild($location)
   $listing.appendChild($date)
   $listing.appendChild($summary)
   $listing.appendChild($link)
+  $listing.appendChild(createJournalButton(listing))
   return $listing
+}
+
+function createJournalButton(listing) {
+  const app = {
+    jobTitle: listing.title,
+    company: listing.company,
+    location: listing.location
+  }
+  const $journalButton = document.createElement('button')
+  $journalButton.textContent = 'Add to Journal'
+
+  $journalButton.addEventListener('click', () => {
+    post('/applications/' + userId, JSON.stringify(app), { 'Content-Type': 'application/json' })
+  })
+
+  return $journalButton
 }
 
 function renderUserInfo(user) {
