@@ -302,6 +302,8 @@ function renderApplication(application) {
   $application.appendChild($jobTitle)
   $application.appendChild($jobCompany)
   $application.appendChild($jobLocation)
+  $application.setAttribute('data-toggle', 'modal')
+  $application.setAttribute('data-target', '#interview-modal')
   return $application
 }
 
