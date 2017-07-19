@@ -8,9 +8,10 @@ const knex = require('knex')({
   dialect: 'pg',
   connection: 'postgres://localhost:5432/hire-me'
 })
-const usersGateway = require('./users-gateway')
+const dbGateway = require('./db-gateway')
 
-const users = usersGateway(knex)
+const applications = dbGateway(knex, 'applications')
+const users = dbGateway(knex, 'users')
 const upload = multer({ dest: 'public/uploads/' })
 const app = express()
 
@@ -33,6 +34,14 @@ app.post('/users', upload.single('picture'), (req, res) => {
     .then(() => res.sendStatus(201))
 })
 
+app.post('/applications/:id', (req, res) => {
+  const app = req.body
+  app.userId = req.params.id
+  applications
+    .create(snakecaseKeys(app))
+    .then(() => res.sendStatus(201))
+})
+
 app.get('/listings', (req, res) => {
   indeed.query(queryOptions).then(listings => {
     res.json(listings)
@@ -49,6 +58,12 @@ app.get('/users', (req, res) => {
   users
     .find()
     .then(users => res.json(users))
+})
+
+app.get('/applications/:id', (req, res) => {
+  applications
+    .find({ user_id: req.params.id })
+    .then(apps => res.json(apps))
 })
 
 app.put('/users/:id', upload.single('picture'), (req, res) => {

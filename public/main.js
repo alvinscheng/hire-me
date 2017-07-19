@@ -1,4 +1,5 @@
 const $listings = document.querySelector('#listings')
+const $journalTableBody = document.querySelector('#journal-table-body')
 const $jobSearch = document.querySelector('#job-search')
 const $createUser = document.querySelector('#create-user')
 const $jobSearchContainer = document.querySelector('#job-search-container')
@@ -9,14 +10,21 @@ const $picUpload = document.querySelector('#pic-upload')
 const $profilePage = document.querySelector('#profile-page')
 const $createProfilePage = document.querySelector('#create-profile-page')
 const $searchPage = document.querySelector('#search-page')
+const $journalPage = document.querySelector('#journal-page')
 const $navItems = document.querySelectorAll('.nav-item')
 const $preview = document.querySelector('#profile-pic-preview')
 const $selectUsers = document.querySelector('#users')
 
-const pages = [$searchPage, $profilePage, $createProfilePage]
 let userId = 10
 let jobList = []
 let pageNums = 1
+const pageMap = {
+  'search': $searchPage,
+  'profile': $profilePage,
+  'profile/create': $createProfilePage,
+  'profile/edit': $createProfilePage,
+  'journal': $journalPage
+}
 
 window.addEventListener('load', () => {
   renderSelectUsers()
@@ -42,7 +50,6 @@ $jobSearch.addEventListener('submit', () => {
       $jobSearchContainer.classList.remove('home')
       $sideBar.classList.remove('hidden')
       $backgroundImage.classList.add('hidden')
-      showPage($searchPage)
       jobList = listings.map(listing => (renderListing(listing)))
       changePage(1)
     })
@@ -79,8 +86,7 @@ $navItems.forEach($navItem => {
 })
 
 class HashRouter {
-  constructor($views) {
-    this.$views = Array.from($views)
+  constructor() {
     this.handlers = {}
     this.isListening = false
   }
@@ -91,9 +97,17 @@ class HashRouter {
 
   match(hash) {
     const viewId = hash.replace('#', '')
+    const $view = pageMap[viewId]
+    if (!$view) return
     const handler = this.handlers[viewId]
     if (!handler) return
     handler()
+    $view.classList.remove('hidden')
+    for (const page in pageMap) {
+      if (pageMap[page] !== $view) {
+        pageMap[page].classList.add('hidden')
+      }
+    }
   }
 
   goTo(hash) {
@@ -103,24 +117,32 @@ class HashRouter {
   listen() {
     if (this.isListening) return
     window.addEventListener('hashchange', () => {
-      this.match(window.location.hash)
+      if (window.location.hash.indexOf('?') === -1) {
+        this.match(window.location.hash)
+      }
+      else {
+        this.match(window.location.hash.substr(0, window.location.hash.indexOf('?')))
+      }
     })
     this.isListening = true
     window.dispatchEvent(new Event('hashchange'))
   }
 }
 
-const $pages = document.querySelectorAll('.page')
-const router = new HashRouter($pages)
+const router = new HashRouter()
 
 router.when('search', () => {
-  showPage($searchPage)
+  if (window.location.hash.indexOf('?') !== -1) {
+    changePage(translateQueryString(window.location.hash.substr(window.location.hash.indexOf('?'))).page)
+  }
+  else {
+    changePage(1)
+  }
 })
 
 router.when('profile', () => {
   getCurrentUser()
     .then(user => renderUserInfo(user))
-  showPage($profilePage)
 })
 
 router.when('profile/create', () => {
@@ -132,13 +154,20 @@ router.when('profile/create', () => {
     id: '',
     picture: 'profile-photo.png'
   })
-  showPage($createProfilePage)
 })
 
 router.when('profile/edit', () => {
   getCurrentUser()
     .then(users => renderEditFormInfo(users))
-  showPage($createProfilePage)
+})
+
+router.when('journal', () => {
+  get('/applications/' + userId)
+    .then(response => response.json())
+    .then(apps => {
+      $journalTableBody.innerHTML = ''
+      apps.forEach(app => $journalTableBody.appendChild(renderApplication(app)))
+    })
 })
 
 router.listen()
@@ -178,6 +207,18 @@ function previewPhoto() {
   }
 }
 
+function translateQueryString(string) {
+  const querystring = string.substr(1)
+  const queries = {}
+  querystring
+    .split('&')
+    .forEach(query => {
+      const [key, val] = query.split('=')
+      queries[key] = val
+    })
+  return queries
+}
+
 function queryString(obj) {
   let string = '?'
   for (const key in obj) {
@@ -199,7 +240,7 @@ function changePage(page) {
       $listings.appendChild(jobList[i])
     }
   }
-  window.location.hash = page
+  window.location.hash = 'search?page=' + page
   renderPageNums(page)
 }
 
@@ -229,13 +270,13 @@ function renderPageNums(current) {
   if (current > 1) {
     const $prev = document.createElement('a')
     $prev.textContent = 'Prev'
-    $prev.href = '#' + (current - 1)
+    $prev.href = '#search?page=' + (current - 1)
     $pageNumbers.appendChild($prev)
   }
   for (let i = 1; i <= pageNums; i++) {
     const $pageNum = document.createElement('a')
     $pageNum.textContent = i
-    $pageNum.href = '#' + i
+    $pageNum.href = '#search?page=' + i
     if (i === current) {
       $pageNum.style.fontWeight = '900'
     }
@@ -245,19 +286,23 @@ function renderPageNums(current) {
   if (current < pageNums) {
     const $next = document.createElement('a')
     $next.textContent = 'Next'
-    $next.href = '#' + (current + 1)
+    $next.href = '#search?page=' + (current + 1)
     $pageNumbers.appendChild($next)
   }
-
-  addPageRoutes()
 }
 
-function addPageRoutes() {
-  for (let i = 1; i <= pageNums; i++) {
-    router.when(i, () => {
-      changePage(i)
-    })
-  }
+function renderApplication(application) {
+  const $application = document.createElement('tr')
+  const $jobTitle = document.createElement('td')
+  const $jobCompany = document.createElement('td')
+  const $jobLocation = document.createElement('td')
+  $jobTitle.textContent = application.job_title
+  $jobCompany.textContent = application.company
+  $jobLocation.textContent = application.location
+  $application.appendChild($jobTitle)
+  $application.appendChild($jobCompany)
+  $application.appendChild($jobLocation)
+  return $application
 }
 
 function renderListing(listing) {
@@ -268,21 +313,45 @@ function renderListing(listing) {
   const $date = document.createElement('p')
   const $summary = document.createElement('p')
   const $link = document.createElement('a')
+  const $linkButton = document.createElement('button')
   const { title, company, location, summary, url, postDate } = listing
+
   $job.textContent = title
   $company.textContent = company + '- '
   $location.textContent = location
   $date.textContent = 'Posted: ' + postDate
   $summary.textContent = summary
-  $link.textContent = 'Apply Here'
+  $linkButton.textContent = 'Apply Here'
+  $linkButton.classList.add('btn', 'btn-default', 'btn-xs')
   $link.setAttribute('href', url)
+  $link.setAttribute('target', '_blank')
+  $link.appendChild($linkButton)
+
   $listing.appendChild($job)
   $listing.appendChild($company)
   $listing.appendChild($location)
   $listing.appendChild($date)
   $listing.appendChild($summary)
   $listing.appendChild($link)
+  $listing.appendChild(createJournalButton(listing))
   return $listing
+}
+
+function createJournalButton(listing) {
+  const app = {
+    jobTitle: listing.title,
+    company: listing.company,
+    location: listing.location
+  }
+  const $journalButton = document.createElement('button')
+  $journalButton.textContent = 'Add to Journal'
+  $journalButton.classList.add('btn', 'btn-primary', 'btn-xs')
+
+  $journalButton.addEventListener('click', () => {
+    post('/applications/' + userId, JSON.stringify(app), { 'Content-Type': 'application/json' })
+  })
+
+  return $journalButton
 }
 
 function renderUserInfo(user) {
@@ -312,15 +381,6 @@ function renderEditFormInfo(user) {
   if (user.picture) {
     $preview.src = 'uploads/' + user.picture
   }
-}
-
-function showPage(page) {
-  page.classList.remove('hidden')
-  pages.forEach(view => {
-    if (view !== page) {
-      view.classList.add('hidden')
-    }
-  })
 }
 
 function getCurrentUser() {

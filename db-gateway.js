@@ -1,4 +1,4 @@
-const usersGateway = (db) => {
+const dbGateway = (db, table) => {
 
   return {
     find,
@@ -11,7 +11,7 @@ const usersGateway = (db) => {
   function find(where) {
     const query = db
       .select('*')
-      .from('users')
+      .from(table)
     if (where) {
       query.where(where)
     }
@@ -21,14 +21,14 @@ const usersGateway = (db) => {
   function create(newUser) {
     return db
       .insert(newUser)
-      .into('users')
+      .into(table)
       .returning('*')
       .then(saved => saved[0])
   }
 
   function updateById(id, updates) {
     return db
-      .table('users')
+      .table(table)
       .where('id', id)
       .update(updates)
       .returning('*')
@@ -37,7 +37,7 @@ const usersGateway = (db) => {
 
   function deleteById(id) {
     return db
-      .from('users')
+      .from(table)
       .where('id', id)
       .delete()
   }
@@ -45,10 +45,10 @@ const usersGateway = (db) => {
   function findById(id) {
     return db
       .select('*')
-      .from('users')
+      .from(table)
       .where('id', id)
       .first()
   }
 }
 
-module.exports = usersGateway
+module.exports = dbGateway
