@@ -302,8 +302,23 @@ function renderApplication(application) {
   $application.appendChild($jobTitle)
   $application.appendChild($jobCompany)
   $application.appendChild($jobLocation)
+  $application.dataset.id = application.id
   $application.setAttribute('data-toggle', 'modal')
   $application.setAttribute('data-target', '#interview-modal')
+
+  $application.addEventListener('click', () => {
+    const $modalTitle = document.querySelector('#modal-title')
+    $modalTitle.textContent = application.job_title
+    const $modalBody = document.querySelector('#modal-body')
+    $modalBody.innerHTML = ''
+    const $modalCompany = document.createElement('h6')
+    $modalCompany.textContent = application.company
+    const $modalLocation = document.createElement('h6')
+    $modalLocation.textContent = application.location
+    $modalBody.appendChild($modalCompany)
+    $modalBody.appendChild($modalLocation)
+  })
+
   return $application
 }
 
