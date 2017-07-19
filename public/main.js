@@ -1,3 +1,5 @@
+/* eslint-disable no-undef */
+
 const $listings = document.querySelector('#listings')
 const $journalTableBody = document.querySelector('#journal-table-body')
 const $jobSearch = document.querySelector('#job-search')
@@ -14,6 +16,8 @@ const $journalPage = document.querySelector('#journal-page')
 const $navItems = document.querySelectorAll('.nav-item')
 const $preview = document.querySelector('#profile-pic-preview')
 const $selectUsers = document.querySelector('#users')
+
+flatpickr('#flatpickr', { enableTime: true })
 
 let userId = 10
 let jobList = []
