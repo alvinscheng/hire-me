@@ -15,10 +15,16 @@ const $navItems = document.querySelectorAll('.nav-item')
 const $preview = document.querySelector('#profile-pic-preview')
 const $selectUsers = document.querySelector('#users')
 
-const pages = [$searchPage, $profilePage, $createProfilePage, $journalPage]
 let userId = 10
 let jobList = []
 let pageNums = 1
+const pageMap = {
+  'search': $searchPage,
+  'profile': $profilePage,
+  'profile/create': $createProfilePage,
+  'profile/edit': $createProfilePage,
+  'journal': $journalPage
+}
 
 window.addEventListener('load', () => {
   renderSelectUsers()
@@ -44,7 +50,6 @@ $jobSearch.addEventListener('submit', () => {
       $jobSearchContainer.classList.remove('home')
       $sideBar.classList.remove('hidden')
       $backgroundImage.classList.add('hidden')
-      showPage($searchPage)
       jobList = listings.map(listing => (renderListing(listing)))
       changePage(1)
     })
@@ -81,8 +86,7 @@ $navItems.forEach($navItem => {
 })
 
 class HashRouter {
-  constructor($views) {
-    this.$views = Array.from($views)
+  constructor() {
     this.handlers = {}
     this.isListening = false
   }
@@ -93,9 +97,17 @@ class HashRouter {
 
   match(hash) {
     const viewId = hash.replace('#', '')
+    const $view = pageMap[viewId]
+    if (!$view) return
     const handler = this.handlers[viewId]
     if (!handler) return
     handler()
+    $view.classList.remove('hidden')
+    for (const page in pageMap) {
+      if (pageMap[page] !== $view) {
+        pageMap[page].classList.add('hidden')
+      }
+    }
   }
 
   goTo(hash) {
@@ -105,24 +117,32 @@ class HashRouter {
   listen() {
     if (this.isListening) return
     window.addEventListener('hashchange', () => {
-      this.match(window.location.hash)
+      if (window.location.hash.indexOf('?') === -1) {
+        this.match(window.location.hash)
+      }
+      else {
+        this.match(window.location.hash.substr(0, window.location.hash.indexOf('?')))
+      }
     })
     this.isListening = true
     window.dispatchEvent(new Event('hashchange'))
   }
 }
 
-const $pages = document.querySelectorAll('.page')
-const router = new HashRouter($pages)
+const router = new HashRouter()
 
 router.when('search', () => {
-  showPage($searchPage)
+  if (window.location.hash.indexOf('?') !== -1) {
+    changePage(translateQueryString(window.location.hash.substr(window.location.hash.indexOf('?'))).page)
+  }
+  else {
+    changePage(1)
+  }
 })
 
 router.when('profile', () => {
   getCurrentUser()
     .then(user => renderUserInfo(user))
-  showPage($profilePage)
 })
 
 router.when('profile/create', () => {
@@ -134,13 +154,11 @@ router.when('profile/create', () => {
     id: '',
     picture: 'profile-photo.png'
   })
-  showPage($createProfilePage)
 })
 
 router.when('profile/edit', () => {
   getCurrentUser()
     .then(users => renderEditFormInfo(users))
-  showPage($createProfilePage)
 })
 
 router.when('journal', () => {
@@ -150,7 +168,6 @@ router.when('journal', () => {
       $journalTableBody.innerHTML = ''
       apps.forEach(app => $journalTableBody.appendChild(renderApplication(app)))
     })
-  showPage($journalPage)
 })
 
 router.listen()
@@ -190,6 +207,18 @@ function previewPhoto() {
   }
 }
 
+function translateQueryString(string) {
+  const querystring = string.substr(1)
+  const queries = {}
+  querystring
+    .split('&')
+    .forEach(query => {
+      const [key, val] = query.split('=')
+      queries[key] = val
+    })
+  return queries
+}
+
 function queryString(obj) {
   let string = '?'
   for (const key in obj) {
@@ -211,7 +240,7 @@ function changePage(page) {
       $listings.appendChild(jobList[i])
     }
   }
-  window.location.hash = page
+  window.location.hash = 'search?page=' + page
   renderPageNums(page)
 }
 
@@ -241,13 +270,13 @@ function renderPageNums(current) {
   if (current > 1) {
     const $prev = document.createElement('a')
     $prev.textContent = 'Prev'
-    $prev.href = '#' + (current - 1)
+    $prev.href = '#search?page=' + (current - 1)
     $pageNumbers.appendChild($prev)
   }
   for (let i = 1; i <= pageNums; i++) {
     const $pageNum = document.createElement('a')
     $pageNum.textContent = i
-    $pageNum.href = '#' + i
+    $pageNum.href = '#search?page=' + i
     if (i === current) {
       $pageNum.style.fontWeight = '900'
     }
@@ -257,18 +286,8 @@ function renderPageNums(current) {
   if (current < pageNums) {
     const $next = document.createElement('a')
     $next.textContent = 'Next'
-    $next.href = '#' + (current + 1)
+    $next.href = '#search?page=' + (current + 1)
     $pageNumbers.appendChild($next)
-  }
-
-  addPageRoutes()
-}
-
-function addPageRoutes() {
-  for (let i = 1; i <= pageNums; i++) {
-    router.when(i, () => {
-      changePage(i)
-    })
   }
 }
 
@@ -362,15 +381,6 @@ function renderEditFormInfo(user) {
   if (user.picture) {
     $preview.src = 'uploads/' + user.picture
   }
-}
-
-function showPage(page) {
-  page.classList.remove('hidden')
-  pages.forEach(view => {
-    if (view !== page) {
-      view.classList.add('hidden')
-    }
-  })
 }
 
 function getCurrentUser() {
