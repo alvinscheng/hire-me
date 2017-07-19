@@ -313,14 +313,14 @@ function renderApplication(application) {
   $application.addEventListener('click', () => {
     const $modalTitle = document.querySelector('#modal-title')
     $modalTitle.textContent = application.job_title
-    const $modalBody = document.querySelector('#modal-body')
-    $modalBody.innerHTML = ''
+    const $modalContent = document.querySelector('#modal-content')
+    $modalContent.innerHTML = ''
     const $modalCompany = document.createElement('h6')
     $modalCompany.textContent = application.company
     const $modalLocation = document.createElement('h6')
     $modalLocation.textContent = application.location
-    $modalBody.appendChild($modalCompany)
-    $modalBody.appendChild($modalLocation)
+    $modalContent.appendChild($modalCompany)
+    $modalContent.appendChild($modalLocation)
   })
 
   return $application
