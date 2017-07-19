@@ -57,6 +57,10 @@
   margin: 5px;
 }
 
+#journal-table {
+  margin: 25px;
+}
+
 .home {
   position: absolute;
   top: 25vh;
