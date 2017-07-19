@@ -144,7 +144,7 @@ router.when('profile/edit', () => {
 })
 
 router.when('journal', () => {
-  get('/applications')
+  get('/applications/' + userId)
     .then(response => response.json())
     .then(apps => {
       $journalTableBody.innerHTML = ''

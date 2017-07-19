@@ -60,9 +60,9 @@ app.get('/users', (req, res) => {
     .then(users => res.json(users))
 })
 
-app.get('/applications', (req, res) => {
+app.get('/applications/:id', (req, res) => {
   applications
-    .find()
+    .find({ user_id: req.params.id })
     .then(apps => res.json(apps))
 })
 
