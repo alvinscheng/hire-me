@@ -60,6 +60,12 @@ app.get('/users', (req, res) => {
     .then(users => res.json(users))
 })
 
+app.get('/applications', (req, res) => {
+  applications
+    .find()
+    .then(apps => res.json(apps))
+})
+
 app.put('/users/:id', upload.single('picture'), (req, res) => {
   const user = {}
   for (const key in req.body) {

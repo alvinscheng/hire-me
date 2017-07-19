@@ -13,13 +13,19 @@
     <nav id="sidebar" class="col-md-2 hidden">
       <ul class="nav nav-pills nav-stacked">
         <li class="nav-item active">
-          <a href="#search" id="nav-search">Search</a>
+          <a href="#search">Search</a>
         </li>
         <li class="nav-item">
-          <a href="#profile" id="nav-profile">Profile</a>
+          <a href="#profile">Profile</a>
         </li>
         <li class="nav-item">
-          <a href="#profile/resumes" id="nav-resumes">Resumes</a>
+          <a href="#journal">Journal</a>
+        </li>
+        <li class="nav-item">
+          <a href="#calendar">Calendar</a>
+        </li>
+        <li class="nav-item">
+          <a href="#profile/resumes">Resumes</a>
         </li>
       </ul>
     </nav>
@@ -107,6 +113,19 @@
                 </div>
               </div>
             </form>
+          </div>
+
+          <div id="journal-page" class="page hidden">
+            <table id="journal-table" class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Job Title</th>
+                  <th>Company</th>
+                  <th>Location</th>
+                </tr>
+              </thead>
+              <tbody id="journal-table-body"></tbody>
+            </table>
           </div>
         </div>
       </div>

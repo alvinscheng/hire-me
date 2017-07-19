@@ -1,4 +1,5 @@
 const $listings = document.querySelector('#listings')
+const $journalTableBody = document.querySelector('#journal-table-body')
 const $jobSearch = document.querySelector('#job-search')
 const $createUser = document.querySelector('#create-user')
 const $jobSearchContainer = document.querySelector('#job-search-container')
@@ -9,11 +10,12 @@ const $picUpload = document.querySelector('#pic-upload')
 const $profilePage = document.querySelector('#profile-page')
 const $createProfilePage = document.querySelector('#create-profile-page')
 const $searchPage = document.querySelector('#search-page')
+const $journalPage = document.querySelector('#journal-page')
 const $navItems = document.querySelectorAll('.nav-item')
 const $preview = document.querySelector('#profile-pic-preview')
 const $selectUsers = document.querySelector('#users')
 
-const pages = [$searchPage, $profilePage, $createProfilePage]
+const pages = [$searchPage, $profilePage, $createProfilePage, $journalPage]
 let userId = 10
 let jobList = []
 let pageNums = 1
@@ -141,6 +143,16 @@ router.when('profile/edit', () => {
   showPage($createProfilePage)
 })
 
+router.when('journal', () => {
+  get('/applications')
+    .then(response => response.json())
+    .then(apps => {
+      $journalTableBody.innerHTML = ''
+      apps.forEach(app => $journalTableBody.appendChild(renderApplication(app)))
+    })
+  showPage($journalPage)
+})
+
 router.listen()
 
 function search(path, queries) {
@@ -258,6 +270,20 @@ function addPageRoutes() {
       changePage(i)
     })
   }
+}
+
+function renderApplication(application) {
+  const $application = document.createElement('tr')
+  const $jobTitle = document.createElement('td')
+  const $jobCompany = document.createElement('td')
+  const $jobLocation = document.createElement('td')
+  $jobTitle.textContent = application.job_title
+  $jobCompany.textContent = application.company
+  $jobLocation.textContent = application.location
+  $application.appendChild($jobTitle)
+  $application.appendChild($jobCompany)
+  $application.appendChild($jobLocation)
+  return $application
 }
 
 function renderListing(listing) {
