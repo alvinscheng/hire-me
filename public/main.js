@@ -1,7 +1,10 @@
+/* global flatpickr */
+flatpickr('#flatpickr', { enableTime: true })
 const $listings = document.querySelector('#listings')
 const $journalTableBody = document.querySelector('#journal-table-body')
 const $jobSearch = document.querySelector('#job-search')
 const $createUser = document.querySelector('#create-user')
+const $addInterview = document.querySelector('#add-interview')
 const $jobSearchContainer = document.querySelector('#job-search-container')
 const $backgroundImage = document.querySelector('#background-image')
 const $pageNumbers = document.querySelector('#page-numbers')
@@ -64,6 +67,17 @@ $createUser.addEventListener('submit', () => {
       renderSelectUsers()
       router.goTo('profile')
     })
+})
+
+$addInterview.addEventListener('click', () => {
+  const $intDate = document.querySelector('#flatpickr')
+  const $intNumber = document.querySelector('#int-number')
+  const $applicationId = document.querySelector('#application-id')
+  const interviewData = {
+    date: $intDate.value,
+    interviewNumber: $intNumber.value
+  }
+  post('/interviews/' + $applicationId.value, JSON.stringify(interviewData), { 'Content-Type': 'application/json' })
 })
 
 $selectUsers.addEventListener('change', event => {
@@ -302,6 +316,24 @@ function renderApplication(application) {
   $application.appendChild($jobTitle)
   $application.appendChild($jobCompany)
   $application.appendChild($jobLocation)
+  $application.setAttribute('data-toggle', 'modal')
+  $application.setAttribute('data-target', '#interview-modal')
+
+  $application.addEventListener('click', () => {
+    const $applicationId = document.querySelector('#application-id')
+    $applicationId.value = application.id
+    const $modalTitle = document.querySelector('#modal-title')
+    $modalTitle.textContent = application.job_title
+    const $modalContent = document.querySelector('#modal-content')
+    $modalContent.innerHTML = ''
+    const $modalCompany = document.createElement('h5')
+    $modalCompany.textContent = application.company
+    const $modalLocation = document.createElement('h5')
+    $modalLocation.textContent = application.location
+    $modalContent.appendChild($modalCompany)
+    $modalContent.appendChild($modalLocation)
+  })
+
   return $application
 }
 

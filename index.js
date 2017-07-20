@@ -12,6 +12,7 @@ const dbGateway = require('./db-gateway')
 
 const applications = dbGateway(knex, 'applications')
 const users = dbGateway(knex, 'users')
+const interviews = dbGateway(knex, 'interviews')
 const upload = multer({ dest: 'public/uploads/' })
 const app = express()
 
@@ -34,11 +35,19 @@ app.post('/users', upload.single('picture'), (req, res) => {
     .then(() => res.sendStatus(201))
 })
 
-app.post('/applications/:id', (req, res) => {
+app.post('/applications/:userId', (req, res) => {
   const app = req.body
-  app.userId = req.params.id
+  app.userId = req.params.userId
   applications
     .create(snakecaseKeys(app))
+    .then(() => res.sendStatus(201))
+})
+
+app.post('/interviews/:applicationId', (req, res) => {
+  const interview = req.body
+  interview.applicationId = req.params.applicationId
+  interviews
+    .create(snakecaseKeys(interview))
     .then(() => res.sendStatus(201))
 })
 
@@ -60,9 +69,9 @@ app.get('/users', (req, res) => {
     .then(users => res.json(users))
 })
 
-app.get('/applications/:id', (req, res) => {
+app.get('/applications/:userId', (req, res) => {
   applications
-    .find({ user_id: req.params.id })
+    .find({ user_id: req.params.userId })
     .then(apps => res.json(apps))
 })
 

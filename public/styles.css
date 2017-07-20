@@ -61,6 +61,35 @@
   margin: 25px;
 }
 
+#journal-table-body > tr {
+  cursor: pointer;
+}
+
+#journal-table-body > tr:hover {
+  color: #2980b9;
+}
+
+.modal-form {
+  width: 95%;
+  margin: 15px auto;
+}
+
+#int-number {
+  height: 30px;
+}
+
+#flatpickr {
+  width: 85%;
+}
+
+#add-interview {
+  margin-top: 15px;
+}
+
+#int-number-laber {
+  margin-top: 5px;
+}
+
 .home {
   position: absolute;
   top: 25vh;
