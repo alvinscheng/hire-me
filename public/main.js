@@ -328,9 +328,9 @@ function renderApplication(application) {
     $modalTitle.textContent = application.job_title
     const $modalContent = document.querySelector('#modal-content')
     $modalContent.innerHTML = ''
-    const $modalCompany = document.createElement('h6')
+    const $modalCompany = document.createElement('h5')
     $modalCompany.textContent = application.company
-    const $modalLocation = document.createElement('h6')
+    const $modalLocation = document.createElement('h5')
     $modalLocation.textContent = application.location
     $modalContent.appendChild($modalCompany)
     $modalContent.appendChild($modalLocation)

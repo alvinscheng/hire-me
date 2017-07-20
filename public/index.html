@@ -129,21 +129,20 @@
             </table>
 
             <div class="modal fade" id="interview-modal" tabindex="-1" role="dialog" aria-labelledby="modal-title">
-              <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="modal-title"></h4>
-                  </div>
+              <div class="modal-dialog modal-sm" role="document">
+                <div class="modal-content text-center">
                   <div class="modal-body">
+                    <h3 class="modal-title" id="modal-title"></h3>
                     <div id ="modal-content"></div>
-                    <input id="flatpickr" type="text" placeholder="Select Date"/>
-                    <input id="int-number" type="number" name="interview-number" min="1" value="1"/>
+                    <input class="form-control modal-form" id="flatpickr" type="text" placeholder="Select Date"/>
+                    <div class="form-group modal-form">
+                      <label id="int-number-label" for="int-number" class="col-sm-8 control-label">Interview Number:</label>
+                      <div class="col-sm-4">
+                        <input class="form-control" id="int-number" type="number" name="interview-number" min="1" value="1"/>
+                      </div>
+                    </div>
                     <input id="application-id" type="text" class="hidden"/>
-                  </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button id="add-interview" type="button" class="btn btn-primary" data-dismiss="modal">Add Interview</button>
+                    <button id="add-interview" type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Add Interview</button>
                   </div>
                 </div>
               </div>
