@@ -75,11 +75,6 @@ app.get('/applications/:userId', (req, res) => {
     .then(apps => res.json(apps))
 })
 
-// app.get('/interviews/:applicationId', (req, res) => {
-//   interviews
-//     .find
-// })
-
 app.put('/users/:id', upload.single('picture'), (req, res) => {
   const user = {}
   for (const key in req.body) {
