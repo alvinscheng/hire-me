@@ -79,7 +79,6 @@ $addInterview.addEventListener('click', () => {
     date: $intDate.value,
     interviewNumber: $intNumber.value
   }
-  console.log($applicationId.value)
   post('/interviews/' + $applicationId.value, JSON.stringify(interviewData), { 'Content-Type': 'application/json' })
 })
 
