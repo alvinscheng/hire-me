@@ -1,4 +1,4 @@
-/* global flatpickr */
+/* global flatpickr gapi */
 flatpickr('#flatpickr', { enableTime: true })
 const $listings = document.querySelector('#listings')
 const $journalTableBody = document.querySelector('#journal-table-body')
@@ -17,6 +17,8 @@ const $journalPage = document.querySelector('#journal-page')
 const $navItems = document.querySelectorAll('.nav-item')
 const $preview = document.querySelector('#profile-pic-preview')
 const $selectUsers = document.querySelector('#users')
+const $signIn = document.querySelector('#sign-in')
+const $signOut = document.querySelector('#sign-out')
 
 let userId = 10
 let jobList = []
@@ -34,6 +36,25 @@ window.addEventListener('load', () => {
   getCurrentUser()
     .then(user => renderUserInfo(user))
 })
+
+$signIn.addEventListener('success', onSignIn)
+
+$signOut.addEventListener('click', signOut)
+
+function onSignIn(googleUser) {
+  const profile = googleUser.getBasicProfile()
+  console.log('ID: ' + profile.getId())
+  console.log('Name: ' + profile.getName())
+  console.log('Image URL: ' + profile.getImageUrl())
+  console.log('Email: ' + profile.getEmail())
+}
+
+function signOut() {
+  const auth2 = gapi.auth2.getAuthInstance()
+  auth2.signOut().then(function () {
+    console.log('User signed out.')
+  })
+}
 
 $jobSearch.addEventListener('submit', () => {
   event.preventDefault()
