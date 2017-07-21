@@ -32,7 +32,6 @@ const pageMap = {
 }
 
 window.addEventListener('load', () => {
-  renderSelectUsers()
   getCurrentUser()
     .then(user => renderUserInfo(user))
 })
@@ -43,10 +42,25 @@ $signOut.addEventListener('click', signOut)
 
 function onSignIn(googleUser) {
   const profile = googleUser.getBasicProfile()
-  console.log('ID: ' + profile.getId())
-  console.log('Name: ' + profile.getName())
-  console.log('Image URL: ' + profile.getImageUrl())
-  console.log('Email: ' + profile.getEmail())
+  get('/profile/' + profile.getId())
+    .then(res => res.json())
+    .then(user => {
+      if (!user[0]) {
+        const newProfile = {
+          fullName: profile.getName(),
+          email: profile.getEmail(),
+          picture: profile.getImageUrl(),
+          googleId: profile.getId()
+        }
+        console.log(newProfile)
+        post('/users', JSON.stringify(newProfile), { 'Content-Type': 'application/json' })
+          .then(() => console.log('User created!'))
+      }
+      else {
+        renderUserInfo(user)
+        console.log('rendered')
+      }
+    })
 }
 
 function signOut() {

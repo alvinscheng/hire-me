@@ -59,7 +59,7 @@ app.get('/listings', (req, res) => {
 
 app.get('/profile/:id', (req, res) => {
   users
-    .findById(req.params.id)
+    .find({ google_id: req.params.id })
     .then(user => res.json(user))
 })
 
