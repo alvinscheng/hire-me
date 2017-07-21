@@ -19,12 +19,6 @@ const app = express()
 app.use(express.static('public'))
 app.use(bodyParser.json())
 
-app.post('/', (req, res) => {
-  const newQueryOptions = req.query
-  Object.assign(queryOptions, newQueryOptions)
-  res.sendStatus(201)
-})
-
 app.post('/users', upload.single('picture'), (req, res) => {
   const user = snakecaseKeys(req.body)
   if (req.file) {
@@ -55,6 +49,8 @@ app.post('/interviews/:applicationId', (req, res) => {
 })
 
 app.get('/listings', (req, res) => {
+  const newQueryOptions = req.query
+  Object.assign(queryOptions, newQueryOptions)
   indeed.query(queryOptions).then(listings => {
     res.json(listings)
   })

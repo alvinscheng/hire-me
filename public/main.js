@@ -42,6 +42,10 @@ function onSignIn(googleUser) {
   show($sideBar)
   show($signOut)
   hide($signIn)
+  const $journalButtons = document.querySelectorAll('.btn-journal')
+  if ($journalButtons.length > 0) {
+    $journalButtons.forEach($button => show($button))
+  }
   getCurrentUser()
     .then(user => {
       if (!user[0]) {
@@ -82,9 +86,8 @@ $jobSearch.addEventListener('submit', () => {
     query: $jobInput.value,
     city: $cityInput.value
   }
-  search('/', options)
 
-  get('/listings')
+  get('/listings' + queryString(options))
     .then(response => {
       return response.json()
     })
@@ -208,10 +211,6 @@ router.when('journal', () => {
 })
 
 router.listen()
-
-function search(path, queries) {
-  return fetch(path + queryString(queries), { method: 'POST' })
-}
 
 function get(path) {
   return fetch(path, { method: 'GET' })
@@ -394,7 +393,13 @@ function createJournalButton(listing) {
   }
   const $journalButton = document.createElement('button')
   $journalButton.textContent = 'Add to Journal'
-  $journalButton.classList.add('btn', 'btn-primary', 'btn-xs')
+  $journalButton.classList.add('btn', 'btn-primary', 'btn-xs', 'btn-journal')
+  if (signedIn) {
+    show($journalButton)
+  }
+  else {
+    hide($journalButton)
+  }
 
   $journalButton.addEventListener('click', () => {
     post('/applications/' + userId, JSON.stringify(app), { 'Content-Type': 'application/json' })
