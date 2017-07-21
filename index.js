@@ -32,7 +32,10 @@ app.post('/users', upload.single('picture'), (req, res) => {
   }
   users
     .create(user)
-    .then(() => res.sendStatus(201))
+    .then(data => {
+      res.json(data)
+      res.sendStatus(201)
+    })
 })
 
 app.post('/applications/:userId', (req, res) => {

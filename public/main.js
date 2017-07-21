@@ -20,7 +20,7 @@ const $signIn = document.querySelector('#sign-in')
 const $signOut = document.querySelector('#sign-out')
 
 let signedIn = false
-let userId = 19
+let userId = null
 let googleId = null
 let jobList = []
 let pageNums = 1
@@ -51,13 +51,22 @@ function onSignIn(googleUser) {
           googleId: profile.getId()
         }
         post('/users', JSON.stringify(newProfile), { 'Content-Type': 'application/json' })
-          .then(() => console.log('User created!'))
+          .then(response => response.json())
+          .then(user => {
+            userId = user.id
+            console.log('User created!')
+          })
+      }
+      else {
+        userId = user[0].id
       }
     })
 }
 
 function signOut() {
   signedIn = false
+  userId = null
+  googleId = null
   hide($sideBar)
   hide($signOut)
   show($signIn)
