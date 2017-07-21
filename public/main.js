@@ -51,9 +51,7 @@ function onSignIn(googleUser) {
 
 function signOut() {
   const auth2 = gapi.auth2.getAuthInstance()
-  auth2.signOut().then(function () {
-    console.log('User signed out.')
-  })
+  auth2.signOut().then(() => console.log('User signed out.'))
 }
 
 $jobSearch.addEventListener('submit', () => {
@@ -182,8 +180,7 @@ router.when('profile', () => {
 
 router.when('profile/create', () => {
   renderEditFormInfo({
-    first_name: '',
-    last_name: '',
+    full_name: '',
     email: '',
     phone: '',
     id: '',
@@ -287,7 +284,7 @@ function renderSelectUsers() {
       users.forEach(user => {
         const $selectUser = document.createElement('option')
         $selectUser.setAttribute('value', user.id)
-        $selectUser.textContent = user.first_name + ' ' + user.last_name
+        $selectUser.textContent = user.full_name
         $selectUsers.appendChild($selectUser)
       })
     })
@@ -411,7 +408,7 @@ function renderUserInfo(user) {
   const $profileName = document.querySelector('#profile-name')
   const $profileEmail = document.querySelector('#profile-email')
   const $profilePhone = document.querySelector('#profile-phone')
-  $profileName.textContent = user.first_name + ' ' + user.last_name
+  $profileName.textContent = user.full_name
   $profileEmail.textContent = user.email
   $profilePhone.textContent = user.phone
   if (user.picture) {
@@ -421,13 +418,11 @@ function renderUserInfo(user) {
 }
 
 function renderEditFormInfo(user) {
-  const $editFirstName = document.querySelector('#first-name')
-  const $editLastName = document.querySelector('#last-name')
+  const $editFullName = document.querySelector('#full-name')
   const $editEmail = document.querySelector('#email')
   const $editPhone = document.querySelector('#phone')
   const $userId = document.querySelector('#user-id')
-  $editFirstName.setAttribute('placeholder', user.first_name)
-  $editLastName.setAttribute('placeholder', user.last_name)
+  $editFullName.setAttribute('placeholder', user.full_name)
   $editEmail.setAttribute('placeholder', user.email)
   $editPhone.setAttribute('placeholder', user.phone)
   $userId.value = user.id
