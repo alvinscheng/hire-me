@@ -19,6 +19,7 @@ const $preview = document.querySelector('#profile-pic-preview')
 const $signIn = document.querySelector('#sign-in')
 const $signOut = document.querySelector('#sign-out')
 
+// let signedIn = false
 let userId = 19
 let googleId = null
 let jobList = []
@@ -35,6 +36,7 @@ $signIn.addEventListener('success', onSignIn)
 $signOut.addEventListener('click', signOut)
 
 function onSignIn(googleUser) {
+  // signedIn = true
   const profile = googleUser.getBasicProfile()
   googleId = profile.getId()
   getCurrentUser()
@@ -52,6 +54,7 @@ function onSignIn(googleUser) {
 }
 
 function signOut() {
+  // signedIn = false
   const auth2 = gapi.auth2.getAuthInstance()
   auth2.signOut().then(() => console.log('User signed out.'))
 }
@@ -72,8 +75,8 @@ $jobSearch.addEventListener('submit', () => {
     })
     .then(listings => {
       $jobSearchContainer.classList.remove('home')
-      $sideBar.classList.remove('hidden')
-      $backgroundImage.classList.add('hidden')
+      show($sideBar)
+      hide($backgroundImage)
       jobList = listings.map(listing => (renderListing(listing)))
       changePage(1)
     })
@@ -130,10 +133,10 @@ class HashRouter {
     const handler = this.handlers[viewId]
     if (!handler) return
     handler()
-    $view.classList.remove('hidden')
+    show($view)
     for (const page in pageMap) {
       if (pageMap[page] !== $view) {
-        pageMap[page].classList.add('hidden')
+        hide(pageMap[page])
       }
     }
   }
@@ -211,6 +214,14 @@ function put(path, data, header) {
     headers: header,
     body: data
   })
+}
+
+function hide(element) {
+  element.classList.add('hidden')
+}
+
+function show(element) {
+  element.classList.remove('hidden')
 }
 
 function previewPhoto() {
