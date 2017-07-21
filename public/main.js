@@ -58,7 +58,6 @@ function onSignIn(googleUser) {
           .then(response => response.json())
           .then(user => {
             userId = user.id
-            console.log('User created!')
           })
       }
       else {
@@ -75,7 +74,7 @@ function signOut() {
   hide($signOut)
   show($signIn)
   const auth2 = gapi.auth2.getAuthInstance()
-  auth2.signOut().then(() => console.log('User signed out.'))
+  auth2.signOut()
 }
 
 $jobSearch.addEventListener('submit', () => {
