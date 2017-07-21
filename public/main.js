@@ -3,7 +3,7 @@ flatpickr('#flatpickr', { enableTime: true })
 const $listings = document.querySelector('#listings')
 const $journalTableBody = document.querySelector('#journal-table-body')
 const $jobSearch = document.querySelector('#job-search')
-const $createUser = document.querySelector('#create-user')
+const $editUser = document.querySelector('#edit-user')
 const $addInterview = document.querySelector('#add-interview')
 const $jobSearchContainer = document.querySelector('#job-search-container')
 const $backgroundImage = document.querySelector('#background-image')
@@ -11,7 +11,7 @@ const $pageNumbers = document.querySelector('#page-numbers')
 const $sideBar = document.querySelector('#sidebar')
 const $picUpload = document.querySelector('#pic-upload')
 const $profilePage = document.querySelector('#profile-page')
-const $createProfilePage = document.querySelector('#create-profile-page')
+const $editProfilePage = document.querySelector('#edit-profile-page')
 const $searchPage = document.querySelector('#search-page')
 const $journalPage = document.querySelector('#journal-page')
 const $navItems = document.querySelectorAll('.nav-item')
@@ -26,8 +26,7 @@ let pageNums = 1
 const pageMap = {
   'search': $searchPage,
   'profile': $profilePage,
-  'profile/create': $createProfilePage,
-  'profile/edit': $createProfilePage,
+  'profile/edit': $editProfilePage,
   'journal': $journalPage
 }
 
@@ -80,12 +79,12 @@ $jobSearch.addEventListener('submit', () => {
     })
 })
 
-$createUser.addEventListener('submit', () => {
+$editUser.addEventListener('submit', () => {
   event.preventDefault()
-  const formData = new FormData($createUser)
-  save('/users', formData, formData.get('id'))
+  const formData = new FormData($editUser)
+  put('/users/' + formData.get('id'), formData)
     .then(() => {
-      $createUser.reset()
+      $editUser.reset()
       router.goTo('profile')
     })
 })
@@ -172,16 +171,6 @@ router.when('search', () => {
 router.when('profile', () => {
   getCurrentUser()
     .then(user => renderUserInfo(user[0]))
-})
-
-router.when('profile/create', () => {
-  renderEditFormInfo({
-    full_name: '',
-    email: '',
-    phone: '',
-    id: '',
-    picture: 'profile-photo.png'
-  })
 })
 
 router.when('profile/edit', () => {
@@ -415,14 +404,4 @@ function renderEditFormInfo(user) {
 
 function getCurrentUser() {
   return get('/profile/' + googleId).then(response => response.json())
-}
-
-function save(path, data, id) {
-  if (id) {
-    return put(path + '/' + id, data)
-  }
-  else {
-    data.delete('id')
-    return post(path, data)
-  }
 }
