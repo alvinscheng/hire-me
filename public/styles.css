@@ -18,6 +18,12 @@
   opacity: 0.5;
 }
 
+#log-in {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+}
+
 #sidebar {
   position: fixed;
   margin-top: 20px;

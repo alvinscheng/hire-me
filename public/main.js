@@ -40,6 +40,8 @@ function onSignIn(googleUser) {
   const profile = googleUser.getBasicProfile()
   googleId = profile.getId()
   show($sideBar)
+  show($signOut)
+  hide($signIn)
   getCurrentUser()
     .then(user => {
       if (!user[0]) {
@@ -57,6 +59,8 @@ function onSignIn(googleUser) {
 function signOut() {
   signedIn = false
   hide($sideBar)
+  hide($signOut)
+  show($signIn)
   const auth2 = gapi.auth2.getAuthInstance()
   auth2.signOut().then(() => console.log('User signed out.'))
 }
@@ -137,9 +141,9 @@ class HashRouter {
     const handler = this.handlers[viewId]
     if (!handler) return
     handler()
-    show($view)
+    show($view.page)
     for (const page in pageMap) {
-      if (pageMap[page].page !== $view) {
+      if (pageMap[page].page !== $view.page) {
         hide(pageMap[page].page)
       }
     }
