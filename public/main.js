@@ -16,11 +16,11 @@ const $searchPage = document.querySelector('#search-page')
 const $journalPage = document.querySelector('#journal-page')
 const $navItems = document.querySelectorAll('.nav-item')
 const $preview = document.querySelector('#profile-pic-preview')
-const $selectUsers = document.querySelector('#users')
 const $signIn = document.querySelector('#sign-in')
 const $signOut = document.querySelector('#sign-out')
 
-let userId = 10
+let userId = 19
+let googleId = null
 let jobList = []
 let pageNums = 1
 const pageMap = {
@@ -31,34 +31,23 @@ const pageMap = {
   'journal': $journalPage
 }
 
-window.addEventListener('load', () => {
-  getCurrentUser()
-    .then(user => renderUserInfo(user))
-})
-
 $signIn.addEventListener('success', onSignIn)
 
 $signOut.addEventListener('click', signOut)
 
 function onSignIn(googleUser) {
   const profile = googleUser.getBasicProfile()
-  get('/profile/' + profile.getId())
-    .then(res => res.json())
+  googleId = profile.getId()
+  getCurrentUser()
     .then(user => {
       if (!user[0]) {
         const newProfile = {
           fullName: profile.getName(),
           email: profile.getEmail(),
-          picture: profile.getImageUrl(),
           googleId: profile.getId()
         }
-        console.log(newProfile)
         post('/users', JSON.stringify(newProfile), { 'Content-Type': 'application/json' })
           .then(() => console.log('User created!'))
-      }
-      else {
-        renderUserInfo(user)
-        console.log('rendered')
       }
     })
 }
@@ -97,7 +86,6 @@ $createUser.addEventListener('submit', () => {
   save('/users', formData, formData.get('id'))
     .then(() => {
       $createUser.reset()
-      renderSelectUsers()
       router.goTo('profile')
     })
 })
@@ -111,12 +99,6 @@ $addInterview.addEventListener('click', () => {
     interviewNumber: $intNumber.value
   }
   post('/interviews/' + $applicationId.value, JSON.stringify(interviewData), { 'Content-Type': 'application/json' })
-})
-
-$selectUsers.addEventListener('change', event => {
-  userId = Number(event.target.value)
-  getCurrentUser()
-    .then(user => renderUserInfo(user))
 })
 
 $picUpload.addEventListener('change', previewPhoto)
@@ -189,7 +171,7 @@ router.when('search', () => {
 
 router.when('profile', () => {
   getCurrentUser()
-    .then(user => renderUserInfo(user))
+    .then(user => renderUserInfo(user[0]))
 })
 
 router.when('profile/create', () => {
@@ -204,7 +186,7 @@ router.when('profile/create', () => {
 
 router.when('profile/edit', () => {
   getCurrentUser()
-    .then(users => renderEditFormInfo(users))
+    .then(user => renderEditFormInfo(user[0]))
 })
 
 router.when('journal', () => {
@@ -288,20 +270,6 @@ function changePage(page) {
   }
   window.location.hash = 'search?page=' + page
   renderPageNums(page)
-}
-
-function renderSelectUsers() {
-  get('/users')
-    .then(response => response.json())
-    .then(users => {
-      $selectUsers.innerHTML = ''
-      users.forEach(user => {
-        const $selectUser = document.createElement('option')
-        $selectUser.setAttribute('value', user.id)
-        $selectUser.textContent = user.full_name
-        $selectUsers.appendChild($selectUser)
-      })
-    })
 }
 
 function renderPageNums(current) {
@@ -446,7 +414,7 @@ function renderEditFormInfo(user) {
 }
 
 function getCurrentUser() {
-  return get('/profile/' + userId).then(response => response.json())
+  return get('/profile/' + googleId).then(response => response.json())
 }
 
 function save(path, data, id) {
