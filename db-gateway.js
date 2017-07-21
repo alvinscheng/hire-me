@@ -18,9 +18,9 @@ const dbGateway = (db, table) => {
     return query
   }
 
-  function create(newUser) {
+  function create(item) {
     return db
-      .insert(newUser)
+      .insert(item)
       .into(table)
       .returning('*')
       .then(saved => saved[0])

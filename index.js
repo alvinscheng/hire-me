@@ -19,12 +19,6 @@ const app = express()
 app.use(express.static('public'))
 app.use(bodyParser.json())
 
-app.post('/', (req, res) => {
-  const newQueryOptions = req.query
-  Object.assign(queryOptions, newQueryOptions)
-  res.sendStatus(201)
-})
-
 app.post('/users', upload.single('picture'), (req, res) => {
   const user = snakecaseKeys(req.body)
   if (req.file) {
@@ -32,7 +26,10 @@ app.post('/users', upload.single('picture'), (req, res) => {
   }
   users
     .create(user)
-    .then(() => res.sendStatus(201))
+    .then(data => {
+      res.json(data)
+      res.sendStatus(201)
+    })
 })
 
 app.post('/applications/:userId', (req, res) => {
@@ -52,6 +49,8 @@ app.post('/interviews/:applicationId', (req, res) => {
 })
 
 app.get('/listings', (req, res) => {
+  const newQueryOptions = req.query
+  Object.assign(queryOptions, newQueryOptions)
   indeed.query(queryOptions).then(listings => {
     res.json(listings)
   })
@@ -59,7 +58,7 @@ app.get('/listings', (req, res) => {
 
 app.get('/profile/:id', (req, res) => {
   users
-    .findById(req.params.id)
+    .find({ google_id: req.params.id })
     .then(user => res.json(user))
 })
 

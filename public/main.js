@@ -1,9 +1,9 @@
-/* global flatpickr */
+/* global flatpickr gapi */
 flatpickr('#flatpickr', { enableTime: true })
 const $listings = document.querySelector('#listings')
 const $journalTableBody = document.querySelector('#journal-table-body')
 const $jobSearch = document.querySelector('#job-search')
-const $createUser = document.querySelector('#create-user')
+const $editUser = document.querySelector('#edit-user')
 const $addInterview = document.querySelector('#add-interview')
 const $jobSearchContainer = document.querySelector('#job-search-container')
 const $backgroundImage = document.querySelector('#background-image')
@@ -11,29 +11,71 @@ const $pageNumbers = document.querySelector('#page-numbers')
 const $sideBar = document.querySelector('#sidebar')
 const $picUpload = document.querySelector('#pic-upload')
 const $profilePage = document.querySelector('#profile-page')
-const $createProfilePage = document.querySelector('#create-profile-page')
+const $editProfilePage = document.querySelector('#edit-profile-page')
 const $searchPage = document.querySelector('#search-page')
 const $journalPage = document.querySelector('#journal-page')
 const $navItems = document.querySelectorAll('.nav-item')
 const $preview = document.querySelector('#profile-pic-preview')
-const $selectUsers = document.querySelector('#users')
+const $signIn = document.querySelector('#sign-in')
+const $signOut = document.querySelector('#sign-out')
 
-let userId = 10
+let signedIn = false
+let userId = null
+let googleId = null
 let jobList = []
 let pageNums = 1
 const pageMap = {
-  'search': $searchPage,
-  'profile': $profilePage,
-  'profile/create': $createProfilePage,
-  'profile/edit': $createProfilePage,
-  'journal': $journalPage
+  'search': { page: $searchPage, restricted: false },
+  'profile': { page: $profilePage, restricted: true },
+  'profile/edit': { page: $editProfilePage, restricted: true },
+  'journal': { page: $journalPage, restricted: true }
 }
 
-window.addEventListener('load', () => {
-  renderSelectUsers()
+$signIn.addEventListener('success', onSignIn)
+
+$signOut.addEventListener('click', signOut)
+
+function onSignIn(googleUser) {
+  signedIn = true
+  const profile = googleUser.getBasicProfile()
+  googleId = profile.getId()
+  show($sideBar)
+  show($signOut)
+  hide($signIn)
+  const $journalButtons = document.querySelectorAll('.btn-journal')
+  if ($journalButtons.length > 0) {
+    $journalButtons.forEach($button => show($button))
+  }
   getCurrentUser()
-    .then(user => renderUserInfo(user))
-})
+    .then(user => {
+      if (!user[0]) {
+        const newProfile = {
+          fullName: profile.getName(),
+          email: profile.getEmail(),
+          googleId: profile.getId()
+        }
+        post('/users', JSON.stringify(newProfile), { 'Content-Type': 'application/json' })
+          .then(response => response.json())
+          .then(user => {
+            userId = user.id
+          })
+      }
+      else {
+        userId = user[0].id
+      }
+    })
+}
+
+function signOut() {
+  signedIn = false
+  userId = null
+  googleId = null
+  hide($sideBar)
+  hide($signOut)
+  show($signIn)
+  const auth2 = gapi.auth2.getAuthInstance()
+  auth2.signOut()
+}
 
 $jobSearch.addEventListener('submit', () => {
   event.preventDefault()
@@ -43,28 +85,28 @@ $jobSearch.addEventListener('submit', () => {
     query: $jobInput.value,
     city: $cityInput.value
   }
-  search('/', options)
 
-  get('/listings')
+  get('/listings' + queryString(options))
     .then(response => {
       return response.json()
     })
     .then(listings => {
       $jobSearchContainer.classList.remove('home')
-      $sideBar.classList.remove('hidden')
-      $backgroundImage.classList.add('hidden')
+      if (signedIn === true) {
+        show($sideBar)
+      }
+      hide($backgroundImage)
       jobList = listings.map(listing => (renderListing(listing)))
       changePage(1)
     })
 })
 
-$createUser.addEventListener('submit', () => {
+$editUser.addEventListener('submit', () => {
   event.preventDefault()
-  const formData = new FormData($createUser)
-  save('/users', formData, formData.get('id'))
+  const formData = new FormData($editUser)
+  put('/users/' + formData.get('id'), formData)
     .then(() => {
-      $createUser.reset()
-      renderSelectUsers()
+      $editUser.reset()
       router.goTo('profile')
     })
 })
@@ -78,12 +120,6 @@ $addInterview.addEventListener('click', () => {
     interviewNumber: $intNumber.value
   }
   post('/interviews/' + $applicationId.value, JSON.stringify(interviewData), { 'Content-Type': 'application/json' })
-})
-
-$selectUsers.addEventListener('change', event => {
-  userId = Number(event.target.value)
-  getCurrentUser()
-    .then(user => renderUserInfo(user))
 })
 
 $picUpload.addEventListener('change', previewPhoto)
@@ -112,14 +148,14 @@ class HashRouter {
   match(hash) {
     const viewId = hash.replace('#', '')
     const $view = pageMap[viewId]
-    if (!$view) return
+    if (!$view || (!signedIn && $view.restricted)) return
     const handler = this.handlers[viewId]
     if (!handler) return
     handler()
-    $view.classList.remove('hidden')
+    show($view.page)
     for (const page in pageMap) {
-      if (pageMap[page] !== $view) {
-        pageMap[page].classList.add('hidden')
+      if (pageMap[page].page !== $view.page) {
+        hide(pageMap[page].page)
       }
     }
   }
@@ -156,23 +192,12 @@ router.when('search', () => {
 
 router.when('profile', () => {
   getCurrentUser()
-    .then(user => renderUserInfo(user))
-})
-
-router.when('profile/create', () => {
-  renderEditFormInfo({
-    first_name: '',
-    last_name: '',
-    email: '',
-    phone: '',
-    id: '',
-    picture: 'profile-photo.png'
-  })
+    .then(user => renderUserInfo(user[0]))
 })
 
 router.when('profile/edit', () => {
   getCurrentUser()
-    .then(users => renderEditFormInfo(users))
+    .then(user => renderEditFormInfo(user[0]))
 })
 
 router.when('journal', () => {
@@ -185,10 +210,6 @@ router.when('journal', () => {
 })
 
 router.listen()
-
-function search(path, queries) {
-  return fetch(path + queryString(queries), { method: 'POST' })
-}
 
 function get(path) {
   return fetch(path, { method: 'GET' })
@@ -208,6 +229,14 @@ function put(path, data, header) {
     headers: header,
     body: data
   })
+}
+
+function hide(element) {
+  element.classList.add('hidden')
+}
+
+function show(element) {
+  element.classList.remove('hidden')
 }
 
 function previewPhoto() {
@@ -256,20 +285,6 @@ function changePage(page) {
   }
   window.location.hash = 'search?page=' + page
   renderPageNums(page)
-}
-
-function renderSelectUsers() {
-  get('/users')
-    .then(response => response.json())
-    .then(users => {
-      $selectUsers.innerHTML = ''
-      users.forEach(user => {
-        const $selectUser = document.createElement('option')
-        $selectUser.setAttribute('value', user.id)
-        $selectUser.textContent = user.first_name + ' ' + user.last_name
-        $selectUsers.appendChild($selectUser)
-      })
-    })
 }
 
 function renderPageNums(current) {
@@ -377,7 +392,13 @@ function createJournalButton(listing) {
   }
   const $journalButton = document.createElement('button')
   $journalButton.textContent = 'Add to Journal'
-  $journalButton.classList.add('btn', 'btn-primary', 'btn-xs')
+  $journalButton.classList.add('btn', 'btn-primary', 'btn-xs', 'btn-journal')
+  if (signedIn) {
+    show($journalButton)
+  }
+  else {
+    hide($journalButton)
+  }
 
   $journalButton.addEventListener('click', () => {
     post('/applications/' + userId, JSON.stringify(app), { 'Content-Type': 'application/json' })
@@ -390,7 +411,7 @@ function renderUserInfo(user) {
   const $profileName = document.querySelector('#profile-name')
   const $profileEmail = document.querySelector('#profile-email')
   const $profilePhone = document.querySelector('#profile-phone')
-  $profileName.textContent = user.first_name + ' ' + user.last_name
+  $profileName.textContent = user.full_name
   $profileEmail.textContent = user.email
   $profilePhone.textContent = user.phone
   if (user.picture) {
@@ -400,13 +421,11 @@ function renderUserInfo(user) {
 }
 
 function renderEditFormInfo(user) {
-  const $editFirstName = document.querySelector('#first-name')
-  const $editLastName = document.querySelector('#last-name')
+  const $editFullName = document.querySelector('#full-name')
   const $editEmail = document.querySelector('#email')
   const $editPhone = document.querySelector('#phone')
   const $userId = document.querySelector('#user-id')
-  $editFirstName.setAttribute('placeholder', user.first_name)
-  $editLastName.setAttribute('placeholder', user.last_name)
+  $editFullName.setAttribute('placeholder', user.full_name)
   $editEmail.setAttribute('placeholder', user.email)
   $editPhone.setAttribute('placeholder', user.phone)
   $userId.value = user.id
@@ -416,15 +435,5 @@ function renderEditFormInfo(user) {
 }
 
 function getCurrentUser() {
-  return get('/profile/' + userId).then(response => response.json())
-}
-
-function save(path, data, id) {
-  if (id) {
-    return put(path + '/' + id, data)
-  }
-  else {
-    data.delete('id')
-    return post(path, data)
-  }
+  return get('/profile/' + googleId).then(response => response.json())
 }
