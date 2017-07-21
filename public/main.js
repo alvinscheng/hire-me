@@ -25,10 +25,10 @@ let googleId = null
 let jobList = []
 let pageNums = 1
 const pageMap = {
-  'search': $searchPage,
-  'profile': $profilePage,
-  'profile/edit': $editProfilePage,
-  'journal': $journalPage
+  'search': { page: $searchPage, restricted: false },
+  'profile': { page: $profilePage, restricted: true },
+  'profile/edit': { page: $editProfilePage, restricted: true },
+  'journal': { page: $journalPage, restricted: true }
 }
 
 $signIn.addEventListener('success', onSignIn)
@@ -133,14 +133,14 @@ class HashRouter {
   match(hash) {
     const viewId = hash.replace('#', '')
     const $view = pageMap[viewId]
-    if (!$view) return
+    if (!$view || (!signedIn && $view.restricted)) return
     const handler = this.handlers[viewId]
     if (!handler) return
     handler()
     show($view)
     for (const page in pageMap) {
-      if (pageMap[page] !== $view) {
-        hide(pageMap[page])
+      if (pageMap[page].page !== $view) {
+        hide(pageMap[page].page)
       }
     }
   }
