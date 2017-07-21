@@ -19,7 +19,7 @@ const $preview = document.querySelector('#profile-pic-preview')
 const $signIn = document.querySelector('#sign-in')
 const $signOut = document.querySelector('#sign-out')
 
-// let signedIn = false
+let signedIn = false
 let userId = 19
 let googleId = null
 let jobList = []
@@ -36,9 +36,10 @@ $signIn.addEventListener('success', onSignIn)
 $signOut.addEventListener('click', signOut)
 
 function onSignIn(googleUser) {
-  // signedIn = true
+  signedIn = true
   const profile = googleUser.getBasicProfile()
   googleId = profile.getId()
+  show($sideBar)
   getCurrentUser()
     .then(user => {
       if (!user[0]) {
@@ -54,7 +55,8 @@ function onSignIn(googleUser) {
 }
 
 function signOut() {
-  // signedIn = false
+  signedIn = false
+  hide($sideBar)
   const auth2 = gapi.auth2.getAuthInstance()
   auth2.signOut().then(() => console.log('User signed out.'))
 }
@@ -75,7 +77,9 @@ $jobSearch.addEventListener('submit', () => {
     })
     .then(listings => {
       $jobSearchContainer.classList.remove('home')
-      show($sideBar)
+      if (signedIn === true) {
+        show($sideBar)
+      }
       hide($backgroundImage)
       jobList = listings.map(listing => (renderListing(listing)))
       changePage(1)
