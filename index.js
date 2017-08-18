@@ -1,3 +1,4 @@
+require('dotenv').config()
 const express = require('express')
 const indeed = require('indeed-scraper')
 const bodyParser = require('body-parser')
@@ -6,7 +7,7 @@ const queryOptions = require('./query-options')
 const snakecaseKeys = require('snakecase-keys')
 const knex = require('knex')({
   dialect: 'pg',
-  connection: 'postgres://localhost:5432/hire-me'
+  connection: process.env.DATABASE_URL
 })
 const dbGateway = require('./db-gateway')
 
@@ -89,4 +90,5 @@ app.put('/users/:id', upload.single('picture'), (req, res) => {
     .then(() => res.sendStatus(200))
 })
 
-app.listen(3000, console.log('Listening on 3000!'))
+const PORT = process.env.PORT || 3000
+app.listen(PORT, console.log('Listening on ' + PORT))

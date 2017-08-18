@@ -1,3 +1,4 @@
 node_modules
 google-maps-key.txt
 public/uploads
+.env
