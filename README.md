@@ -1,5 +1,5 @@
 # hire-me
-A web app for recent bootcamp grads who want to apply for a job.
+A web app for job seekers who want to organize their job search.
 
 ![screen shot 2017-08-18 at 1 19 29 pm](https://user-images.githubusercontent.com/24768321/29476269-1797090e-8418-11e7-9fe6-97db63788553.png)
 
